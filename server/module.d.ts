@@ -3,5 +3,6 @@ declare namespace NodeJS {
     DATABASE_URL: string;
     jwtSecretKey: string;
     jwtRefreshTokenKey: string;
+    PORT: number;
   }
 }
