@@ -1,6 +1,6 @@
-import InvertedLShape from "@/components/ui/InvertedLShape";
-import { Box } from "@mui/joy";
-import LoginForm from "./LoginForm";
+import InvertedLShape from '@/components/ui/InvertedLShape';
+import { Box } from '@mui/joy';
+import LoginForm from './LoginForm';
 
 const LoginContainer = () => {
   return (
@@ -10,13 +10,7 @@ const LoginContainer = () => {
         <InvertedLShape width="460px" height="570px" z={2} />
       </div>
       <div className="absolute left-[-15rem] bottom-[-4rem] bg-[#274FC7] w-[23rem] h-[29rem] rounded-[50%]"></div>
-      <Box
-        height="100vh"
-        width="100%"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
+      <Box height="100vh" width="100%" display="flex" alignItems="center" justifyContent="center">
         <Box
           zIndex={1}
           display="flex"

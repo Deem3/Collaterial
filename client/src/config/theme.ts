@@ -1,24 +1,24 @@
-import palette from "./palette";
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-import { extendTheme } from "@mui/joy";
+import palette from './palette';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import { extendTheme } from '@mui/joy';
 
-declare module "@mui/joy/Input" {
+declare module '@mui/joy/Input' {
   interface InputPropsColorOverrides {
     support: true;
   }
 }
-declare module "@mui/joy/IconButton" {
+declare module '@mui/joy/IconButton' {
   interface IconButtonPropsColorOverrides {
     support: true;
   }
 }
 
-import type { PaletteRange } from "@mui/joy/styles";
+import type { PaletteRange } from '@mui/joy/styles';
 
-declare module "@mui/joy/styles" {
+declare module '@mui/joy/styles' {
   interface ColorPalettePropOverrides {
     neutral: true;
   }
@@ -29,7 +29,7 @@ declare module "@mui/joy/styles" {
 }
 
 const theme = extendTheme({
-  cssVarPrefix: "bs",
+  cssVarPrefix: 'bs',
   colorSchemes: {
     light: { palette },
     dark: { palette },
@@ -41,8 +41,8 @@ const theme = extendTheme({
     JoyIconButton: {
       styleOverrides: {
         root: ({ ownerState }) => ({
-          ...(ownerState.color === "support" && {
-            color: "#FFFFFF",
+          ...(ownerState.color === 'support' && {
+            color: '#FFFFFF',
           }),
         }),
       },
@@ -50,9 +50,9 @@ const theme = extendTheme({
     JoyInput: {
       styleOverrides: {
         root: ({ ownerState }) => ({
-          ...(ownerState.color === "support" && {
-            backgroundColor: "#161B4B",
-            color: "#FFFFFF",
+          ...(ownerState.color === 'support' && {
+            backgroundColor: '#161B4B',
+            color: '#FFFFFF',
           }),
         }),
       },

@@ -1,8 +1,8 @@
-import { userAtom } from "@/store/auth";
-import { Button } from "@mui/joy";
-import { useAtom } from "jotai";
-import { FunctionComponent } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { userAtom } from '@/store/auth';
+import { Button } from '@mui/joy';
+import { useAtom } from 'jotai';
+import { FunctionComponent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface MenuLinkProps {
   link: string;
@@ -12,13 +12,7 @@ interface MenuLinkProps {
   buttonGap?: number;
 }
 
-const MenuLink: FunctionComponent<MenuLinkProps> = ({
-  role,
-  link,
-  name,
-  icon,
-  buttonGap = 6,
-}) => {
+const MenuLink: FunctionComponent<MenuLinkProps> = ({ role, link, name, icon, buttonGap = 6 }) => {
   const { pathname } = useLocation();
 
   const [user] = useAtom(userAtom);
@@ -29,9 +23,9 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({
     <Link
       to={link}
       style={{
-        width: "90%",
-        display: "flex",
-        justifyContent: "flex-end",
+        width: '90%',
+        display: 'flex',
+        justifyContent: 'flex-end',
       }}
     >
       <Button
@@ -39,14 +33,14 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({
         color="neutral"
         startDecorator={icon}
         sx={{
-          ":disabled": {
-            color: "#fff",
-            backgroundColor: "rgb(0,0,0,0.5)",
+          ':disabled': {
+            color: '#fff',
+            backgroundColor: 'rgb(0,0,0,0.5)',
           },
-          "--Button-gap": `${buttonGap}px`,
-          width: "99%",
-          borderRadius: "5px",
-          justifyContent: "flex-start",
+          '--Button-gap': `${buttonGap}px`,
+          width: '99%',
+          borderRadius: '5px',
+          justifyContent: 'flex-start',
         }}
       >
         {name}

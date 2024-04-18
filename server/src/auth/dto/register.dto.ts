@@ -7,8 +7,7 @@ export class RegisterDto {
   @IsNotEmpty()
   @Length(8, 20, { message: 'Password must be between 8 and 20 characters' })
   @Matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/, {
-    message:
-      'Password must contain at least one uppercase letter, one lowercase letter',
+    message: 'Password must contain at least one uppercase letter, one lowercase letter',
   })
   public password: string;
   @IsEnum([ROLE.MANAGER, ROLE.EMPLOYEE])

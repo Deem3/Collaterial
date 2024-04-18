@@ -1,10 +1,10 @@
-import useAuth from "@/hooks/useAuth";
-import { CircularProgress, Grid } from "@mui/joy";
-import { useEffect, useState } from "react";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import Menu from "./Menu";
-import Header from "./Header";
-import { mainColors } from "@/config/colorScheme";
+import useAuth from '@/hooks/useAuth';
+import { CircularProgress, Grid } from '@mui/joy';
+import { useEffect, useState } from 'react';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import Menu from './Menu';
+import Header from './Header';
+import { mainColors } from '@/config/colorScheme';
 
 const ProtectedRoute = ({ role }: { role?: string }) => {
   const [accessToken, refreshToken, user, isLoading] = useAuth();
@@ -15,7 +15,7 @@ const ProtectedRoute = ({ role }: { role?: string }) => {
   useEffect(() => {
     if (!isLoading && user) {
       if (role && !user.sub.role.includes(role)) {
-        navigate("/");
+        navigate('/');
       } else {
         setIsRoleChecked(true);
       }
@@ -40,7 +40,7 @@ const ProtectedRoute = ({ role }: { role?: string }) => {
     );
   }
 
-  if (pathname === "/") {
+  if (pathname === '/') {
     return (
       <>
         <Header />

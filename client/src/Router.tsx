@@ -1,7 +1,7 @@
-import { Routes, Route } from "react-router-dom";
-import LoginContainer from "./app/login/LoginContainer";
-import ProtectedRoute from "./components/ProtectedRoute";
-import HomeContainer from "./app/Home/HomeContainer";
+import { Routes, Route } from 'react-router-dom';
+import LoginContainer from './app/login/LoginContainer';
+import ProtectedRoute from './components/ProtectedRoute';
+import HomeContainer from './app/Home/HomeContainer';
 
 const Router = () => {
   return (

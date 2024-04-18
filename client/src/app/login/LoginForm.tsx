@@ -1,31 +1,21 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  FormHelperText,
-  FormLabel,
-  Input,
-  Stack,
-  Typography,
-} from "@mui/joy";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, FormHelperText, FormLabel, Input, Stack, Typography } from '@mui/joy';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const navigate = useNavigate();
 
   const loginMutation = useMutation({
     mutationFn: async (data: z.infer<typeof loginFormSchema>) => {
-      return axios.post("/api/auth/login", data).then((res) => {
-        localStorage.setItem("access-token", res.data.backendToken.accessToken);
-        localStorage.setItem(
-          "refresh-token",
-          res.data.backendToken.refreshToken,
-        );
+      return axios.post('/api/auth/login', data).then((res) => {
+        localStorage.setItem('access-token', res.data.backendToken.accessToken);
+        localStorage.setItem('refresh-token', res.data.backendToken.refreshToken);
         if (res.status === 201) {
-          navigate("/");
+          navigate('/');
         }
       });
     },
@@ -34,19 +24,18 @@ const LoginForm = () => {
   const loginFormSchema = z.object({
     username: z
       .string()
-      .min(4, { message: "Username must be greater than 4" })
-      .max(10, { message: "Username must not be greater than 10" }),
+      .min(4, { message: 'Username must be greater than 4' })
+      .max(10, { message: 'Username must not be greater than 10' }),
     password: z
       .string()
       .min(6, {
-        message: "Password must be greater than 6",
+        message: 'Password must be greater than 6',
       })
       .max(20, {
-        message: "Password must not be greater than 20",
+        message: 'Password must not be greater than 20',
       })
       .regex(/(?=.*[A-Z])(?=.*[a-z])/, {
-        message:
-          "Password must contain at least one uppercase and one lowercase letter",
+        message: 'Password must contain at least one uppercase and one lowercase letter',
       }),
   });
 
@@ -57,8 +46,8 @@ const LoginForm = () => {
   } = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     },
   });
 
@@ -77,19 +66,9 @@ const LoginForm = () => {
           name="username"
           render={({ field }) => (
             <>
-              <FormLabel sx={{ fontSize: 15, color: "#FFFFFF" }}>
-                Нэвтрэх нэр
-              </FormLabel>
-              <Input
-                color="neutral"
-                size="lg"
-                type="text"
-                {...field}
-                placeholder="Username"
-              />
-              <FormHelperText style={{ color: "red" }}>
-                {errors.username?.message}
-              </FormHelperText>
+              <FormLabel sx={{ fontSize: 15, color: '#FFFFFF' }}>Нэвтрэх нэр</FormLabel>
+              <Input color="neutral" size="lg" type="text" {...field} placeholder="Username" />
+              <FormHelperText style={{ color: 'red' }}>{errors.username?.message}</FormHelperText>
             </>
           )}
         />
@@ -98,33 +77,18 @@ const LoginForm = () => {
           name="password"
           render={({ field }) => (
             <>
-              <FormLabel sx={{ fontSize: 15, color: "#FFFFFF" }}>
-                Нууц үг
-              </FormLabel>
-              <Input
-                size="lg"
-                color="neutral"
-                type="password"
-                {...field}
-                placeholder="Password"
-              />
-              <FormHelperText style={{ color: "red" }}>
-                {errors.password?.message}
-              </FormHelperText>
+              <FormLabel sx={{ fontSize: 15, color: '#FFFFFF' }}>Нууц үг</FormLabel>
+              <Input size="lg" color="neutral" type="password" {...field} placeholder="Password" />
+              <FormHelperText style={{ color: 'red' }}>{errors.password?.message}</FormHelperText>
             </>
           )}
         />
-        <Typography
-          fontSize={15}
-          paddingBottom={3}
-          textAlign="start"
-          textColor="#fff"
-        >
+        <Typography fontSize={15} paddingBottom={3} textAlign="start" textColor="#fff">
           Нууц үг мартсан?
         </Typography>
         <Button
           sx={{
-            backgroundColor: "#003465",
+            backgroundColor: '#003465',
           }}
           type="submit"
           color="neutral"

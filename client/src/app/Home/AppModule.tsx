@@ -1,7 +1,7 @@
-import { mainColors } from "@/config/colorScheme";
-import { Box, Typography } from "@mui/joy";
-import { FunctionComponent } from "react";
-import { Link } from "react-router-dom";
+import { mainColors } from '@/config/colorScheme';
+import { Box, Typography } from '@mui/joy';
+import { FunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 
 type AppModuleProps = {
   title: string;
@@ -27,12 +27,7 @@ const AppModule: FunctionComponent<AppModuleProps> = ({ title, icon, to }) => {
           {title}
         </Typography>
       </Box>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100%">
         {icon}
       </Box>
     </Link>

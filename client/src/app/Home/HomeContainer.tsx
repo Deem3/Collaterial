@@ -1,12 +1,12 @@
-import { mainColors } from "@/config/colorScheme";
-import { Box, Grid, Typography } from "@mui/joy";
-import AppModule from "./AppModule";
+import { mainColors } from '@/config/colorScheme';
+import { Box, Grid, Typography } from '@mui/joy';
+import AppModule from './AppModule';
 import {
   PeopleAltOutlined,
   ContentPasteOutlined,
   InboxOutlined,
   InsertDriveFileOutlined,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
 const HomeContainer = () => {
   return (
     <Box height="100vh" width="100%">
@@ -31,38 +31,22 @@ const HomeContainer = () => {
       >
         <AppModule
           title="Харилцагч"
-          icon={
-            <PeopleAltOutlined
-              sx={{ fontSize: "5rem", color: mainColors.primary }}
-            />
-          }
+          icon={<PeopleAltOutlined sx={{ fontSize: '5rem', color: mainColors.primary }} />}
           to="/customer"
         />
         <AppModule
           title="Барьцаа хөрөнгө"
-          icon={
-            <InboxOutlined
-              sx={{ fontSize: "5rem", color: mainColors.primary }}
-            />
-          }
+          icon={<InboxOutlined sx={{ fontSize: '5rem', color: mainColors.primary }} />}
           to="/collateral"
         />
         <AppModule
           title="Зээл"
-          icon={
-            <ContentPasteOutlined
-              sx={{ fontSize: "5rem", color: mainColors.primary }}
-            />
-          }
+          icon={<ContentPasteOutlined sx={{ fontSize: '5rem', color: mainColors.primary }} />}
           to="/lend"
         />
         <AppModule
           title="Тайлан"
-          icon={
-            <InsertDriveFileOutlined
-              sx={{ fontSize: "5rem", color: mainColors.primary }}
-            />
-          }
+          icon={<InsertDriveFileOutlined sx={{ fontSize: '5rem', color: mainColors.primary }} />}
           to="/report"
         />
       </Grid>
