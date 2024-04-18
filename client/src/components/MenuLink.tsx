@@ -1,4 +1,3 @@
-import { mainColors } from "@/config/colorScheme";
 import { userAtom } from "@/store/auth";
 import { Button } from "@mui/joy";
 import { useAtom } from "jotai";
@@ -30,8 +29,7 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({
     <Link
       to={link}
       style={{
-        backgroundColor: pathname === link ? "#fff" : mainColors.primary,
-        width: "100%",
+        width: "90%",
         display: "flex",
         justifyContent: "flex-end",
       }}
@@ -43,10 +41,11 @@ const MenuLink: FunctionComponent<MenuLinkProps> = ({
         sx={{
           ":disabled": {
             color: "#fff",
+            backgroundColor: "rgb(0,0,0,0.5)",
           },
           "--Button-gap": `${buttonGap}px`,
           width: "99%",
-          borderRadius: 0,
+          borderRadius: "5px",
           justifyContent: "flex-start",
         }}
       >

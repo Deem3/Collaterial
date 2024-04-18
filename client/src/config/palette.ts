@@ -18,8 +18,8 @@ const palette = {
     solidHoverBorder: "#4D5B9E",
     solidActiveBg: "#212A7D",
     solidActiveBorder: "#212A7D",
-    solidDisabledBg: mainColors.secondary,
-    solidDisabledBorder: mainColors.secondary,
+    // solidDisabledBg: "rgb(0, 0, 0, 0.5)",
+    // solidDisabledBorder: "rgb(0, 0, 0, 0.5)",
     // btn-light
     // softColor: "#000",
     // softBg: "#f8f9fa",

@@ -9,9 +9,6 @@ import {
 } from "@mui/joy";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-import HttpsOutlinedIcon from "@mui/icons-material/HttpsOutlined";
-import { mainColors } from "@/config/colorScheme";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -35,11 +32,18 @@ const LoginForm = () => {
   });
 
   const loginFormSchema = z.object({
-    username: z.string().min(4).max(10),
+    username: z
+      .string()
+      .min(4, { message: "Username must be greater than 4" })
+      .max(10, { message: "Username must not be greater than 10" }),
     password: z
       .string()
-      .min(6)
-      .max(20)
+      .min(6, {
+        message: "Password must be greater than 6",
+      })
+      .max(20, {
+        message: "Password must not be greater than 20",
+      })
       .regex(/(?=.*[A-Z])(?=.*[a-z])/, {
         message:
           "Password must contain at least one uppercase and one lowercase letter",
@@ -59,7 +63,11 @@ const LoginForm = () => {
   });
 
   const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
-    loginMutation.mutate(data);
+    const username = data.username.toLowerCase();
+    loginMutation.mutate({
+      username,
+      password: data.password,
+    });
   };
   return (
     <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -73,19 +81,11 @@ const LoginForm = () => {
                 Нэвтрэх нэр
               </FormLabel>
               <Input
-                startDecorator={
-                  <PersonOutlineOutlinedIcon
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
-                }
-                color="support"
+                color="neutral"
                 size="lg"
                 type="text"
                 {...field}
-                autoComplete="off"
-                placeholder="Enter Username"
+                placeholder="Username"
               />
               <FormHelperText style={{ color: "red" }}>
                 {errors.username?.message}
@@ -103,18 +103,10 @@ const LoginForm = () => {
               </FormLabel>
               <Input
                 size="lg"
-                color="support"
-                startDecorator={
-                  <HttpsOutlinedIcon
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
-                }
-                autoComplete="off"
+                color="neutral"
                 type="password"
                 {...field}
-                placeholder="Enter Password"
+                placeholder="Password"
               />
               <FormHelperText style={{ color: "red" }}>
                 {errors.password?.message}
@@ -122,19 +114,20 @@ const LoginForm = () => {
             </>
           )}
         />
-        <Typography fontSize={15} textAlign="end" textColor="#fff">
+        <Typography
+          fontSize={15}
+          paddingBottom={3}
+          textAlign="start"
+          textColor="#fff"
+        >
           Нууц үг мартсан?
         </Typography>
         <Button
-          style={{
-            marginTop: 60,
-            backgroundColor: mainColors.secondary,
-            fontSize: 20,
-            fontWeight: "bold",
-            borderRadius: 35,
-            boxShadow: "3px 4px 6px 50% rgba(0, 0, 0, 0.5)",
+          sx={{
+            backgroundColor: "#003465",
           }}
           type="submit"
+          color="neutral"
         >
           Нэвтрэх
         </Button>

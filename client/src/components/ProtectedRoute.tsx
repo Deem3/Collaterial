@@ -1,7 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import { CircularProgress, Grid } from "@mui/joy";
 import { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Menu from "./Menu";
 import Header from "./Header";
 import { mainColors } from "@/config/colorScheme";
@@ -10,6 +10,7 @@ const ProtectedRoute = ({ role }: { role?: string }) => {
   const [accessToken, refreshToken, user, isLoading] = useAuth();
   const [isRoleChecked, setIsRoleChecked] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -36,6 +37,15 @@ const ProtectedRoute = ({ role }: { role?: string }) => {
           sx={{ color: mainColors.primary }}
         />
       </div>
+    );
+  }
+
+  if (pathname === "/") {
+    return (
+      <>
+        <Header />
+        <Outlet />
+      </>
     );
   }
 

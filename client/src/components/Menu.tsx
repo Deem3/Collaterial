@@ -1,36 +1,36 @@
 import { mainColors } from "@/config/colorScheme";
 import { Box, Stack } from "@mui/joy";
 import MenuLink from "./MenuLink";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
-import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
-import ContentPasteOutlinedIcon from "@mui/icons-material/ContentPasteOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import {
+  ContentPasteOutlined,
+  InsertDriveFileOutlined,
+  GroupOutlined,
+  HomeOutlined,
+  InboxOutlined,
+} from "@mui/icons-material";
 
 const Menu = () => {
   return (
     <Box bgcolor={mainColors.primary} height="100%">
-      <Stack display="flex" alignItems="center" width="100%" paddingTop={4}>
-        <MenuLink icon={<HomeOutlinedIcon />} name="Нүүр хуудас" link="/" />
+      <Stack
+        display="flex"
+        rowGap="28px"
+        alignItems="center"
+        width="100%"
+        paddingTop={4}
+      >
+        <MenuLink icon={<HomeOutlined />} name="Нүүр хуудас" link="/" />
+        <MenuLink icon={<GroupOutlined />} link="/customer" name="Харилцагч" />
         <MenuLink
-          icon={<GroupOutlinedIcon />}
-          link="/customer"
-          name="Харилцагч"
+          icon={<InboxOutlined />}
+          link="/collateral"
+          name="Барьцаа хөрөнгө"
         />
+        <MenuLink icon={<ContentPasteOutlined />} link="/lend" name="Зээл" />
         <MenuLink
-          icon={<ContentPasteOutlinedIcon />}
-          link="/lend"
-          name="Зээл"
-        />
-        <MenuLink
-          icon={<InsertDriveFileOutlinedIcon />}
+          icon={<InsertDriveFileOutlined />}
           name="Тайлан"
           link="/report"
-        />
-        <MenuLink
-          icon={<SettingsOutlinedIcon />}
-          name="Тохиргоо"
-          link="/setting"
         />
       </Stack>
     </Box>
