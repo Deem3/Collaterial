@@ -8,15 +8,42 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
+  id        String     @id @default(uuid())
+  username  String     @unique
   password  String
-  role      ROLE     @default(EMPLOYEE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      ROLE       @default(EMPLOYEE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customer  Customer[]
 }
 
 enum ROLE {
   MANAGER
   EMPLOYEE
+}
+
+model Customer {
+  id                      String   @id @default(uuid())
+  surname                 String
+  firstname               String
+  lastname                String
+  gender                  String
+  birthdate               DateTime
+  civilRegistrationNumber String   @unique
+  register                String   @unique
+  marriageStatus          String
+  familyMembers           Int
+  education               String
+  employment              String
+  city                    String
+  district                String
+  khoroo                  String
+  address                 String
+  monthlyIncome           Int
+  phone                   Json
+  email                   String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  createdBy               String
+  user                    User     @relation(fields: [createdBy], references: [id])
 }

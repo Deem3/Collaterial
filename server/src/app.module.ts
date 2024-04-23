@@ -7,10 +7,12 @@ import { AuthService } from './auth/auth.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
+import { CustomerService } from './customer/customer.service';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
-  providers: [AuthService, PrismaService, UserService, JwtService],
-  imports: [AuthModule, UserModule, ConfigModule.forRoot()],
+  providers: [AuthService, PrismaService, UserService, JwtService, CustomerService],
+  imports: [AuthModule, UserModule, ConfigModule.forRoot(), CustomerModule],
   controllers: [UserController],
 })
 export class AppModule {}
