@@ -37,7 +37,7 @@ const CustomerTable = () => {
         <tbody>
           {isFetched &&
             data.map((customer) => (
-              <tr>
+              <tr key={customer.id}>
                 <th>{customer.id}</th>
                 <th>{customer.lastname}</th>
                 <th>{customer.firstname}</th>

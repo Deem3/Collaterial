@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateCustomerDto } from './dto/createCustomer.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateCustomerDto } from './dto/createCustomer.dto';
 
 @Injectable()
 export class CustomerService {
@@ -41,6 +41,17 @@ export class CustomerService {
 
   async getCustomers() {
     const customers = await this.prisma.customer.findMany();
+    return customers;
+  }
+
+  async getCustomersName() {
+    const customers = await this.prisma.customer.findMany({
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+      },
+    });
     return customers;
   }
 }

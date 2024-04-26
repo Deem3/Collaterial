@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { CreateCustomerDto } from './dto/createCustomer.dto';
 import { CustomerService } from './customer.service';
+import { CreateCustomerDto } from './dto/createCustomer.dto';
 
 @Controller('customer')
 export class CustomerController {
@@ -19,5 +19,10 @@ export class CustomerController {
   @Get('/customers')
   async getCustomers() {
     return this.customerService.getCustomers();
+  }
+
+  @Get('/customersName')
+  async getCustomersName() {
+    return this.customerService.getCustomersName();
   }
 }

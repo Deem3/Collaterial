@@ -9,10 +9,13 @@ import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
 import { CustomerService } from './customer/customer.service';
 import { CustomerModule } from './customer/customer.module';
+import { AssetModule } from './asset/asset.module';
+import { CollateralModule } from './collateral/collateral.module';
+import { LendModule } from './lend/lend.module';
 
 @Module({
   providers: [AuthService, PrismaService, UserService, JwtService, CustomerService],
-  imports: [AuthModule, UserModule, ConfigModule.forRoot(), CustomerModule],
+  imports: [AuthModule, UserModule, ConfigModule.forRoot(), CustomerModule, AssetModule, CollateralModule, LendModule],
   controllers: [UserController],
 })
 export class AppModule {}

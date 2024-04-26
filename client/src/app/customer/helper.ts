@@ -3,18 +3,13 @@ import { z } from 'zod';
 export enum MARRIAGE_STATUS {
   MARRIED = 'Гэрлэсэн',
   SINGLE = 'Ганц бие',
-  DIVORCED = 'Салсан',
-  WIDOWED = 'Бэлэвсэн',
+  OTHER = 'Бусад',
 }
 
 export enum EDUCATION_STATUS {
-  NONE = 'Боловсролгүй',
-  PRIMARY_SCHOOL = 'Бага',
-  MIDDLE_SCHOOL = 'Бүрэн бус дунд',
   HIGH_SCHOOL = 'Бүрэн дунд',
   BACHELOR = 'Бакалавр',
   MASTER = 'Магистр',
-  DOCTOR = 'Доктор',
 }
 
 export enum GENDER {

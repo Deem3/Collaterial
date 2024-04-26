@@ -7,12 +7,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CssVarsProvider } from '@mui/joy';
 import theme from './config/theme.ts';
 import { StyledEngineProvider } from '@mui/joy/styles';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <StyledEngineProvider injectFirst>
       <CssVarsProvider theme={theme}>
         <QueryClientProvider client={new QueryClient()}>
+          <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <Router />
           </BrowserRouter>

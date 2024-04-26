@@ -1,8 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import HomeContainer from './app/Home/HomeContainer';
+import AssetContainer from './app/asset/AssetContainer';
+import CollateralContainer from './app/collateral/CollateralContainer';
+import CustomerContainer from './app/customer/CustomerContainer';
+import LendContainer from './app/lend/LendContainer';
 import LoginContainer from './app/login/LoginContainer';
 import ProtectedRoute from './components/ProtectedRoute';
-import HomeContainer from './app/Home/HomeContainer';
-import CustomerContainer from './app/customer/CustomerContainer';
 
 const Router = () => {
   return (
@@ -10,7 +13,14 @@ const Router = () => {
       <Route path="/login" element={<LoginContainer />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<HomeContainer />} />
+      </Route>
+      <Route element={<ProtectedRoute role="EMPLOYEE" />}>
         <Route path="/customer" element={<CustomerContainer />} />
+        <Route path="/collateral" element={<CollateralContainer />} />
+        <Route path="/lend" element={<LendContainer />} />
+      </Route>
+      <Route element={<ProtectedRoute role="MANAGER" />}>
+        <Route path="/asset" element={<AssetContainer />} />
       </Route>
     </Routes>
   );

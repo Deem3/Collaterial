@@ -24,7 +24,7 @@ import {
   GENDER,
   MARRIAGE_STATUS,
 } from './helper';
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { mainColors } from '@/config/colorScheme';
 
@@ -37,7 +37,7 @@ type AddCustomerModalProps = {
 const controllerDivStyle = 'flex items-center justify-between';
 
 const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, close, userId }) => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   const CustomerMutation = useMutation({
     mutationFn: async (data: z.infer<typeof AddCustomerFormSchema>) => {
       return axios.post('/api/customer/', data);
