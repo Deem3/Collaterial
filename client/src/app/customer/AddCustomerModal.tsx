@@ -23,7 +23,6 @@ import {
   CITY,
   DISTRICT,
   EDUCATION_STATUS,
-  EMPLOYMENT_STATUS,
   GENDER,
   MARRIAGE_STATUS,
 } from './helper';
@@ -72,7 +71,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
       surname: '',
       register: '',
       familyMembers: 0,
-      employment: EMPLOYMENT_STATUS.EMPLOYED,
+      employment: '',
       address: '',
       district: DISTRICT.ULAANBAATAR_BAYANGOL,
       city: CITY.ULAANBAATAR,
@@ -372,19 +371,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                 render={({ field }) => (
                   <div className={controllerDivStyle + ' row-start-8'}>
                     <Typography>Ажил эрхлэлт : </Typography>
-                    <Select
-                      sx={{ width: '50%' }}
-                      {...field}
-                      onChange={(_, newValue: EMPLOYMENT_STATUS | null) => {
-                        if (newValue) setValue('employment', newValue);
-                      }}
-                    >
-                      {Object.entries(EMPLOYMENT_STATUS).map(([key, value]) => (
-                        <Option key={key} value={value}>
-                          {value}
-                        </Option>
-                      ))}
-                    </Select>
+                    <Input {...field} />
                   </div>
                 )}
               />

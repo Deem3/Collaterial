@@ -17,14 +17,6 @@ export enum GENDER {
   FEMALE = 'Эмэгтэй',
 }
 
-export enum EMPLOYMENT_STATUS {
-  UNEMPLOYED = 'Ажилгүй',
-  EMPLOYED = 'Ажилтан',
-  STUDENT = 'Сурагч',
-  RETIRED = 'Тэтгэвэртэй гарсан',
-  PRIVATE = 'Хувиараа',
-}
-
 export enum CITY {
   ULAANBAATAR = 'Улаанбаатар',
   ARKHANGAI = 'Архангай',
@@ -77,7 +69,7 @@ export const AddCustomerFormSchema = z.object({
     second: z.coerce.number().positive(),
   }),
   familyMembers: z.coerce.number().positive(),
-  employment: z.nativeEnum(EMPLOYMENT_STATUS),
+  employment: z.string(),
   email: z.string().email(),
   userId: z.string(),
 });

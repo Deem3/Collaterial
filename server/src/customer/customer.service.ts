@@ -22,7 +22,7 @@ export class CustomerService {
         surname: payload.surname.toLocaleLowerCase(),
         district: payload.district,
         lastname: payload.lastname.toLocaleLowerCase(),
-        register: payload.register.toLocaleLowerCase(),
+        register: payload.register,
         education: payload.education,
         employment: payload.employment,
         familyMembers: payload.familyMembers,

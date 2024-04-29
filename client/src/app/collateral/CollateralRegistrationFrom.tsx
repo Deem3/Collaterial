@@ -289,7 +289,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           render={({ field }) => (
             <div className={'flex justify-between items-center'}>
               <Typography>Барьцааны нэр : </Typography>
-              <Input {...field} />
+              <Input {...field} required />
             </div>
           )}
         />
@@ -323,7 +323,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           render={({ field }) => (
             <div className={'flex justify-between items-center '}>
               <Typography>Тоо, хэмжээ : </Typography>
-              <Input {...field} />
+              <Input {...field} required />
             </div>
           )}
         />
@@ -333,7 +333,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           render={({ field }) => (
             <div className={'flex justify-between items-center'}>
               <Typography>Барьцаалах дүн : </Typography>
-              <Input {...field} />
+              <Input {...field} required />
             </div>
           )}
         />
@@ -343,7 +343,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           render={({ field }) => (
             <div className={'flex justify-between items-center'}>
               <Typography>Зах зээлийн үнэлгээ : </Typography>
-              <Input {...field} />
+              <Input {...field} required />
             </div>
           )}
         />

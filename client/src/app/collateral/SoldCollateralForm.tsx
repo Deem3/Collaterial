@@ -81,7 +81,7 @@ const SoldCollateralForm: FunctionComponent<SoldCollateralFormProps> = ({
           render={({ field }) => (
             <div className="flex justify-between items-center">
               <Typography>Борлуулсан дүн : </Typography>
-              <Input {...field} />
+              <Input {...field} required />
             </div>
           )}
         />
