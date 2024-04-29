@@ -51,7 +51,7 @@ export enum CITY {
 }
 
 export const AddCustomerFormSchema = z.object({
-  customerId: z.string(),
+  customerId: z.coerce.number(),
   surname: z.string(),
   lastname: z.string(),
   firstname: z.string(),

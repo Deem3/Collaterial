@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Lend" ALTER COLUMN "loanAmount" SET DATA TYPE BIGINT;

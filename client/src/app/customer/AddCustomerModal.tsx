@@ -1,17 +1,20 @@
+import Input from '@/components/ui/Input';
+import { mainColors } from '@/config/colorScheme';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Modal,
-  ModalDialog,
-  ModalClose,
-  Typography,
-  Input,
-  Grid,
-  Button,
   Box,
-  Select,
-  Option,
+  Button,
   CircularProgress,
+  Grid,
+  Modal,
+  ModalClose,
+  ModalDialog,
+  Option,
+  Select,
+  Typography,
 } from '@mui/joy';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,9 +27,6 @@ import {
   GENDER,
   MARRIAGE_STATUS,
 } from './helper';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { mainColors } from '@/config/colorScheme';
 
 type AddCustomerModalProps = {
   open: boolean;
@@ -40,7 +40,8 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
   const queryClient = useQueryClient();
   const CustomerMutation = useMutation({
     mutationFn: async (data: z.infer<typeof AddCustomerFormSchema>) => {
-      return axios.post('/api/customer/', data);
+      console.log('hello');
+      axios.post('/api/customer/', data);
     },
     onSuccess: () => {
       close();
@@ -75,7 +76,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
       address: '',
       district: DISTRICT.ULAANBAATAR_BAYANGOL,
       city: CITY.ULAANBAATAR,
-      education: EDUCATION_STATUS.NONE,
+      education: EDUCATION_STATUS.HIGH_SCHOOL,
       marriageStatus: MARRIAGE_STATUS.SINGLE,
       civilRegistrationNumber: '',
       khoroo: '',
@@ -85,7 +86,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
         second: 0,
       },
       gender: GENDER.MALE,
-      customerId: '',
+      customerId: isFetched ? data : 0,
       birthdate: new Date(),
     },
   });
@@ -99,18 +100,30 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
 
   return (
     <Modal open={open}>
-      <ModalDialog layout="center" variant="soft">
+      <ModalDialog sx={{ paddingX: 0, minWidth: '55%' }} layout="center" variant="soft">
         <ModalClose
           onClick={() => {
             close();
             reset();
           }}
         />
-        <Typography fontWeight="bold">Харилцагч</Typography>
-        <Typography>Үндсэн</Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Typography marginLeft={5} fontWeight="bold">
+          Харилцагч
+        </Typography>
+        <Box width="100%" sx={{ borderTop: '1px solid', borderBottom: '1px solid' }}>
+          <Box
+            width="12%"
+            display="flex"
+            justifyContent="center"
+            sx={{ bgcolor: mainColors.primary }}
+            borderRadius={5}
+          >
+            <Typography sx={{ color: 'white', paddingY: '2px' }}>Үндсэн</Typography>
+          </Box>
+        </Box>
+        <form onSubmit={handleSubmit(onSubmit)} className="px-[3.4%]">
           <Grid container columnGap={6} gridTemplateColumns="1fr 1fr" display="grid">
-            <Grid>
+            <Grid display="grid" rowGap={1.5}>
               <Controller
                 control={control}
                 name="customerId"
@@ -141,7 +154,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                 render={({ field }) => (
                   <div className={controllerDivStyle}>
                     <Typography>Ургийн овог : </Typography>
-                    <Input {...field} />
+                    <Input required {...field} sx={{ width: '50%' }} />
                   </div>
                 )}
               />
@@ -151,7 +164,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                 render={({ field }) => (
                   <div className={controllerDivStyle}>
                     <Typography>Овог : </Typography>
-                    <Input {...field} />
+                    <Input required {...field} />
                   </div>
                 )}
               />
@@ -162,7 +175,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                   <div className={controllerDivStyle}>
                     <Typography>Хүйс : </Typography>
                     <Select
-                      sx={{ width: '51%' }}
+                      sx={{ width: '50%' }}
                       {...field}
                       onChange={(_, newValue: GENDER | null) => {
                         if (newValue) {
@@ -186,14 +199,9 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                   <div className={controllerDivStyle}>
                     <Typography>Төрсөн огноо : </Typography>
                     <Input
-                      sx={{ width: '51%' }}
+                      sx={{ width: '50%' }}
                       type="date"
                       {...field}
-                      // onChange={(_, date: string) => {
-                      //   if (date) {
-                      //     setValue('birthdate', new Date(date));
-                      //   }
-                      // }}
                       value={
                         field.value instanceof Date
                           ? field.value.toISOString().split('T')[0]
@@ -220,7 +228,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                   <div className={controllerDivStyle}>
                     <Typography>Гэрлэлтийн байдал: </Typography>
                     <Select
-                      sx={{ width: '51%' }}
+                      sx={{ width: '50%' }}
                       {...field}
                       onChange={(_, newValue: MARRIAGE_STATUS | null) => {
                         if (newValue) {
@@ -245,7 +253,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                     <Typography>Боловсрол: </Typography>
                     <Select
                       {...field}
-                      sx={{ width: '51%' }}
+                      sx={{ width: '50%' }}
                       onChange={(_, newValue: EDUCATION_STATUS | null) => {
                         if (newValue) {
                           setValue('education', newValue);
@@ -268,7 +276,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                   <div className={controllerDivStyle}>
                     <Typography>Аймаг/Хот: </Typography>
                     <Select
-                      sx={{ width: '51%' }}
+                      sx={{ width: '50%' }}
                       {...field}
                       onChange={(_, newValue: CITY | null) => {
                         if (newValue) {
@@ -334,7 +342,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                 render={({ field }) => (
                   <div className={controllerDivStyle + ' row-start-3'}>
                     <Typography>Нэр : </Typography>
-                    <Input {...field} />
+                    <Input required {...field} />
                   </div>
                 )}
               />
@@ -344,7 +352,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                 render={({ field }) => (
                   <div className={controllerDivStyle + ' row-start-5'}>
                     <Typography>Регистр : </Typography>
-                    <Input {...field} />
+                    <Input required {...field} />
                   </div>
                 )}
               />
@@ -365,7 +373,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                   <div className={controllerDivStyle + ' row-start-8'}>
                     <Typography>Ажил эрхлэлт : </Typography>
                     <Select
-                      sx={{ width: '51%' }}
+                      sx={{ width: '50%' }}
                       {...field}
                       onChange={(_, newValue: EMPLOYMENT_STATUS | null) => {
                         if (newValue) setValue('employment', newValue);
@@ -411,7 +419,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                 render={({ field }) => (
                   <div className={controllerDivStyle + ' row-start-10'}>
                     <Typography>Байршил : </Typography>
-                    <Input {...field} />
+                    <Input required {...field} />
                   </div>
                 )}
               />

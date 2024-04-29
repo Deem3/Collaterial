@@ -1,47 +1,46 @@
 import Input from '@/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Grid, Typography } from '@mui/joy';
+import { Box, Button, Grid, Option, Select, Typography } from '@mui/joy';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { EditSalesType } from './helper';
 
-type SoldCollateralFormProps = {
+type ReleaseCollateralFormProps = {
   close: () => void;
-  id: number;
-  edit: EditSalesType | undefined;
+  edit: {
+    collateralId: number;
+    state: string;
+    description: string;
+  };
   resetEdit: () => void;
 };
 
-const SoldCollateralForm: FunctionComponent<SoldCollateralFormProps> = ({
-  id,
-  edit,
+const ReleaseCollateralForm: FunctionComponent<ReleaseCollateralFormProps> = ({
   close,
+  edit,
   resetEdit,
 }) => {
   const queryClient = useQueryClient();
   const formSchema = z.object({
     collateralId: z.coerce.number(),
-    amountSold: z.coerce.number(),
-    soldDate: z.date(),
+    state: z.string().default('RELEASED'),
     description: z.string(),
   });
 
-  const { control, handleSubmit } = useForm<z.infer<typeof formSchema>>({
+  const { control, handleSubmit, setValue } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      collateralId: id ? id : 0,
-      amountSold: edit?.amountSold ?? 0,
-      soldDate: edit?.soldDate ? new Date(edit.soldDate) : new Date(),
-      description: edit?.description ?? '',
+      collateralId: edit ? edit.collateralId : 0,
+      state: edit.state || '',
+      description: edit.description || '',
     },
   });
 
-  const addSoldCollateralMutation = useMutation({
+  const addReleaseCollateralMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      axios.post('/api/collateral/sold', data, {
+      axios.post('/api/collateral/release', data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
         },
@@ -52,10 +51,13 @@ const SoldCollateralForm: FunctionComponent<SoldCollateralFormProps> = ({
       resetEdit();
       close();
     },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
+    },
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    addSoldCollateralMutation.mutate(data);
+    addReleaseCollateralMutation.mutate(data);
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -63,7 +65,7 @@ const SoldCollateralForm: FunctionComponent<SoldCollateralFormProps> = ({
         display="grid"
         gridTemplateColumns="1fr"
         columnGap={5}
-        gridTemplateRows="repeat(5, 1fr)"
+        gridTemplateRows="repeat(4, 1fr)"
       >
         <Controller
           control={control}
@@ -77,29 +79,23 @@ const SoldCollateralForm: FunctionComponent<SoldCollateralFormProps> = ({
         />
         <Controller
           control={control}
-          name="amountSold"
+          name="state"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
-              <Typography>Борлуулсан дүн : </Typography>
-              <Input {...field} />
-            </div>
-          )}
-        />
-        <Controller
-          control={control}
-          name="soldDate"
-          render={({ field }) => (
-            <div className="flex justify-between items-center">
-              <Typography>Борлуулсан огноо : </Typography>
-              <Input
+            <div className={'flex justify-between items-center'}>
+              <Typography>Төлөв : </Typography>
+              <Select
                 {...field}
-                type="date"
-                value={
-                  field.value instanceof Date
-                    ? field.value.toISOString().split('T')[0]
-                    : field.value
-                }
-              />
+                onChange={(_, value: string | null) => {
+                  if (value) {
+                    setValue('state', value);
+                  }
+                }}
+                sx={{
+                  width: '50%',
+                }}
+              >
+                <Option value="RELEASED">Чөлөөлсөн</Option>
+              </Select>
             </div>
           )}
         />
@@ -131,4 +127,5 @@ const SoldCollateralForm: FunctionComponent<SoldCollateralFormProps> = ({
     </form>
   );
 };
-export default SoldCollateralForm;
+
+export default ReleaseCollateralForm;

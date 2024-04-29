@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from 'src/utils/generateId';
 import { CreateCustomerDto } from './dto/createCustomer.dto';
 
 @Injectable()
@@ -11,18 +11,18 @@ export class CustomerService {
     const customer = await this.prisma.customer.create({
       data: {
         id: payload.customerId,
-        firstname: payload.firstname,
-        email: payload.email,
+        firstname: payload.firstname.toLowerCase(),
+        email: payload.email.toLowerCase(),
         phone: payload.phone,
         address: payload.address,
         city: payload.city,
         gender: payload.gender,
         birthdate: payload.birthdate,
         khoroo: payload.khoroo,
-        surname: payload.surname,
+        surname: payload.surname.toLocaleLowerCase(),
         district: payload.district,
-        lastname: payload.lastname,
-        register: payload.register,
+        lastname: payload.lastname.toLocaleLowerCase(),
+        register: payload.register.toLocaleLowerCase(),
         education: payload.education,
         employment: payload.employment,
         familyMembers: payload.familyMembers,
@@ -36,12 +36,29 @@ export class CustomerService {
   }
 
   async getId() {
-    return uuidv4();
+    let id;
+    let customerExists = true;
+
+    while (customerExists) {
+      id = generateId();
+      const customer = await this.prisma.customer.findUnique({
+        where: { id },
+      });
+      if (!customer) {
+        customerExists = false;
+      }
+    }
+
+    return id;
   }
 
   async getCustomers() {
     const customers = await this.prisma.customer.findMany();
-    return customers;
+    return customers.map((customer) => ({
+      ...customer,
+      id: customer.id.toString(),
+      monthlyIncome: customer.monthlyIncome.toString(),
+    }));
   }
 
   async getCustomersName() {
@@ -52,6 +69,9 @@ export class CustomerService {
         lastname: true,
       },
     });
-    return customers;
+    return customers.map((customer) => ({
+      ...customer,
+      id: customer.id.toString(),
+    }));
   }
 }

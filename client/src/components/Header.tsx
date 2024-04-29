@@ -1,10 +1,10 @@
-import { IconButton, Box, Avatar, Dropdown, MenuButton, MenuItem, Menu } from '@mui/joy';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { mainColors } from '@/config/colorScheme';
+import { userAtom } from '@/store/auth';
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import { Avatar, Box, Dropdown, IconButton, Menu, MenuButton, MenuItem } from '@mui/joy';
 import { useAtom } from 'jotai';
-import { userAtom } from '@/store/auth';
 import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
@@ -25,11 +25,12 @@ const Header = () => {
         bgcolor={mainColors.primary}
         alignItems="center"
         justifyContent="space-between"
+        borderBottom="solid 1px white"
       >
         <IconButton
           variant="plain"
           color="support"
-          sx={{ height: 'fit-content', '--IconButton-size': '100px' }}
+          sx={{ height: 'fit-content', '--IconButton-size': '50px', marginX: '1%' }}
         >
           <MenuRoundedIcon />
         </IconButton>

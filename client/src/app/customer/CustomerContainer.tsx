@@ -1,10 +1,10 @@
-import { Button } from '@mui/joy';
-import CustomerTable from './CustomerTable';
-import { AddOutlined } from '@mui/icons-material';
-import AddCustomerModal from './AddCustomerModal';
-import { useState } from 'react';
-import { useAtom } from 'jotai';
 import { userAtom } from '@/store/auth';
+import { AddOutlined } from '@mui/icons-material';
+import { Button } from '@mui/joy';
+import { useAtom } from 'jotai';
+import { useState } from 'react';
+import AddCustomerModal from './AddCustomerModal';
+import CustomerTable from './CustomerTable';
 
 const CustomerContainer = () => {
   const [isAddCustomerModal, setAddCustomerModal] = useState(false);
@@ -14,7 +14,7 @@ const CustomerContainer = () => {
       <Button
         sx={{
           borderRadius: '5px',
-          width: '15%',
+          maxWidth: '20%',
           padding: '10px',
         }}
         startDecorator={<AddOutlined />}

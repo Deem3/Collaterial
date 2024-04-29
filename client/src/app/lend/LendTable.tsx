@@ -3,17 +3,17 @@ import { Dropdown, Menu, MenuButton, MenuItem, Sheet, Table, Typography } from '
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent } from 'react';
+import { formatDate } from './helper';
 
 type LendTableProps = {
   data: {
-    id: number;
     accountNumber: number;
-    debtorId: string;
+    debtorId: BigInteger;
     interestRate: number;
     loanAmount: number;
     termOfLoan: number;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
   }[];
 };
 
@@ -43,13 +43,13 @@ const LendTable: FunctionComponent<LendTableProps> = ({ data }) => {
         <tbody>
           {data &&
             data.map((d) => (
-              <tr key={d.id}>
-                <td>{d.id}</td>
+              <tr key={d.accountNumber}>
                 <td>{d.accountNumber}</td>
-                <td>{customers.find((c) => c.id == d.debtorId).firstname}</td>
+                <td>{d.accountNumber}</td>
+                <td>{customers?.find((c) => c.id == d.debtorId).firstname}</td>
                 <td>{d.loanAmount}</td>
-                <td>{d.startDate}</td>
-                <td>{d.endDate}</td>
+                <td>{formatDate(new Date(d.startDate))}</td>
+                <td>{formatDate(new Date(d.endDate))}</td>
                 <td>
                   <Typography>Дэлгэрэнгүй</Typography>
                 </td>
