@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { generateId } from 'src/utils/generateId';
 import CreateCollateralDto from './dto/createCollateral.dto';
+import { CreateReleaseCollateralDto } from './dto/createReleaseCollateral.dto';
+import { CreateSoldDto } from './dto/createSold.dto';
 
 @Injectable()
 export class CollateralService {
@@ -26,19 +29,29 @@ export class CollateralService {
   }
 
   async getCollateralId() {
-    const id = await this.prisma.collateral.findFirst({
-      orderBy: {
-        id: 'desc',
-      },
-      select: {
-        id: true,
-      },
-    });
-    return id ? id.id : 0;
+    let id;
+    let collateralExists = true;
+
+    while (collateralExists) {
+      id = generateId();
+      const collateral = await this.prisma.collateral.findUnique({
+        where: { id },
+      });
+      if (!collateral) {
+        collateralExists = false;
+      }
+    }
+
+    return id;
   }
 
   async getCollaterals() {
-    return this.prisma.collateral.findMany();
+    const collaterals = await this.prisma.collateral.findMany();
+    return collaterals.map((collateral) => ({
+      ...collateral,
+      id: collateral.id.toString(),
+      ownerId: collateral.ownerId.toString(),
+    }));
   }
 
   async getCollateralById(id: number) {
@@ -66,6 +79,58 @@ export class CollateralService {
         dateOfAssessment: payload.dateOfAssessment,
         description: payload.description,
         additionalFields: payload.additionalFields,
+      },
+    });
+  }
+
+  async addSoldCollateral(payload: CreateSoldDto) {
+    await this.prisma.sales.create({
+      data: {
+        amountSold: payload.amountSold,
+        soldDate: payload.soldDate,
+        collateralId: payload.collateralId,
+      },
+    });
+    await this.prisma.collateral.update({
+      where: {
+        id: payload.collateralId,
+      },
+      data: {
+        state: 'SOLD',
+        description: payload.description,
+      },
+    });
+  }
+
+  async getSoldCollateralById(id: number) {
+    const soldCollateral = await this.prisma.sales.findMany({
+      where: {
+        collateralId: BigInt(id),
+      },
+    });
+    return soldCollateral.map((sold) => ({
+      ...sold,
+      collateralId: sold.collateralId.toString(),
+      amountSold: sold.amountSold.toString(),
+    }));
+  }
+
+  async createReleaseCollater(payload: CreateReleaseCollateralDto) {
+    await this.prisma.collateral.update({
+      where: {
+        id: payload.collateralId,
+      },
+      data: {
+        state: payload.state,
+        description: payload.description,
+      },
+    });
+  }
+
+  async deleteCollateral(id: number) {
+    return this.prisma.collateral.delete({
+      where: {
+        id: BigInt(id),
       },
     });
   }

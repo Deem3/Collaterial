@@ -23,7 +23,7 @@ enum ROLE {
 }
 
 model Customer {
-  id                      String       @id @default(uuid())
+  id                      BigInt       @id @db.BigInt
   surname                 String
   firstname               String
   lastname                String
@@ -39,13 +39,13 @@ model Customer {
   district                String
   khoroo                  String
   address                 String
-  monthlyIncome           Int
+  monthlyIncome           BigInt       @db.BigInt
   phone                   Json
   email                   String
   createdAt               DateTime     @default(now())
   updatedAt               DateTime     @updatedAt
   createdBy               String
-  user                    User         @relation(fields: [createdBy], references: [id])
+  user                    User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   collateral              Collateral[]
   lend                    Lend[]
 }
@@ -62,7 +62,7 @@ model AssetType {
 model SubAssetType {
   id               Int          @id @default(autoincrement())
   name             String
-  assetType        AssetType    @relation(fields: [assetTypeId], references: [id])
+  assetType        AssetType    @relation(fields: [assetTypeId], references: [id], onDelete: Cascade)
   assetTypeId      Int
   additionalFields Json[]
   collateral       Collateral[]
@@ -71,13 +71,13 @@ model SubAssetType {
 }
 
 model Collateral {
-  id               Int          @id @default(autoincrement())
-  ownerId          String
-  owner            Customer     @relation(fields: [ownerId], references: [id])
+  id               BigInt       @id
+  ownerId          BigInt
+  owner            Customer     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   assetTypeId      Int
-  assetType        AssetType    @relation(fields: [assetTypeId], references: [id])
+  assetType        AssetType    @relation(fields: [assetTypeId], references: [id], onDelete: Cascade)
   subAssetTypeId   Int
-  subAssetType     SubAssetType @relation(fields: [subAssetTypeId], references: [id])
+  subAssetType     SubAssetType @relation(fields: [subAssetTypeId], references: [id], onDelete: Cascade)
   collateralName   String
   state            String
   quantity         Int
@@ -85,17 +85,35 @@ model Collateral {
   marketValue      Int
   dateOfAssessment DateTime
   description      String
-  additionalFields Json
+  additionalFields Json?
+  sales            Sales[]
+}
+
+model Sales {
+  id           String     @id @default(uuid())
+  collateralId BigInt     @db.BigInt
+  collateral   Collateral @relation(fields: [collateralId], references: [id], onDelete: Cascade)
+  amountSold   BigInt     @db.BigInt
+  soldDate     DateTime
 }
 
 model Lend {
-  id            Int      @id @default(autoincrement())
-  accountNumber Int
-  debtorId      String
-  debtor        Customer @relation(fields: [debtorId], references: [id])
+  accountNumber Int       @id
+  debtorId      BigInt
+  debtor        Customer  @relation(fields: [debtorId], references: [id], onDelete: Cascade)
   interestRate  Int
-  loanAmount    Int
+  loanAmount    BigInt    @db.BigInt
   termOfLoan    Int
   startDate     DateTime
   endDate       DateTime
+  payment       Payment[]
+}
+
+model Payment {
+  id                 String @id @default(uuid())
+  accountNumber      Int
+  lend               Lend   @relation(fields: [accountNumber], references: [accountNumber], onDelete: Cascade)
+  principalRepayment Int
+  interestRepayment  Int
+  loanBalance        Int
 }

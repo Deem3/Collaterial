@@ -1,6 +1,6 @@
 type CreateCollateralDto = {
   id: number;
-  owner: string;
+  owner: number;
   assetType: number;
   subAssetType: number;
   collateralName: string;

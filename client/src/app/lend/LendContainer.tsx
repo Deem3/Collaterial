@@ -46,7 +46,7 @@ const LendContainer = () => {
       <Button
         sx={{
           borderRadius: '5px',
-          width: '15%',
+          maxWidth: '20%',
           padding: '10px',
         }}
         startDecorator={<AddOutlined />}

@@ -1,6 +1,7 @@
+import Input from '@/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PercentOutlined } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Grid, Input, Typography } from '@mui/joy';
+import { Autocomplete, Box, Button, Grid, Typography } from '@mui/joy';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent } from 'react';
@@ -72,7 +73,7 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="accountNumber"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-[0.2fr_0.8fr]">
               <Typography>Дансны дугаар : </Typography>
               <Input disabled {...field} />
             </div>
@@ -82,16 +83,16 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="debtorId"
           render={({ field }) => (
-            <div className={'flex justify-between items-center'}>
+            <div className={'grid grid-cols-[0.2fr_0.4fr_0.4fr] gap-2'}>
               <Typography>Зээлдэгч : </Typography>
-              <Input {...field} disabled />
+              <Input sx={{ width: '100%' }} {...field} disabled />
               {customers && (
                 <Autocomplete
                   onChange={(_, val: { firstname: string; lastname: string; id: string } | null) =>
                     setValue('debtorId', val ? val.id : '')
                   }
                   sx={{
-                    width: '31%',
+                    width: '100%',
                   }}
                   //   defaultValue={
                   //     edit && customers ? customers.find((c) => c.id === edit.ownerId) : null
@@ -108,14 +109,9 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="interestRate"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-[0.2fr_0.8fr]">
               <Typography>Зээлийн хүү : </Typography>
-              <Input
-                sx={{ width: '31%' }}
-                {...field}
-                type="number"
-                endDecorator={<PercentOutlined />}
-              />
+              <Input {...field} type="number" endDecorator={<PercentOutlined />} />
             </div>
           )}
         />
@@ -123,7 +119,7 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="loanAmount"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-[0.2fr_0.8fr]">
               <Typography>Зээлийн хэмжээ : </Typography>
               <Input {...field} type="number" />
             </div>
@@ -133,7 +129,7 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="termOfLoan"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-[0.2fr_0.8fr]">
               <Typography>Зээлийн хугацаа : </Typography>
               <Input {...field} />
             </div>
@@ -143,12 +139,11 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="startDate"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-[0.2fr_0.8fr]">
               <Typography>Эхлэх хугацаа : </Typography>
               <Input
                 {...field}
                 type="date"
-                sx={{ width: '31%' }}
                 value={
                   field.value instanceof Date
                     ? field.value.toISOString().split('T')[0]
@@ -162,12 +157,11 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
           control={control}
           name="endDate"
           render={({ field }) => (
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-[0.2fr_0.8fr]">
               <Typography>Дуусах хугацаа : </Typography>
               <Input
                 {...field}
                 type="date"
-                sx={{ width: '31%' }}
                 value={
                   field.value instanceof Date
                     ? field.value.toISOString().split('T')[0]

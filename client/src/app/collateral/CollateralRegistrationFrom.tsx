@@ -1,3 +1,4 @@
+import Input from '@/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Accordion,
@@ -8,7 +9,6 @@ import {
   Box,
   Button,
   Grid,
-  Input,
   Option,
   Select,
   Textarea,
@@ -79,7 +79,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
         depositAmount: edit.depositAmount,
         marketValue: edit.marketValue,
         description: edit.description,
-        dateOfAssessment: edit.dateOfAssessment,
+        dateOfAssessment: new Date(edit.dateOfAssessment),
         subAssetType: edit.subAssetTypeId,
       });
 
@@ -160,8 +160,11 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralId'] });
+      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
       close();
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
     },
   });
 
@@ -174,8 +177,11 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralId'] });
+      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
       close();
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
     },
   });
 
@@ -196,7 +202,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           control={control}
           name="id"
           render={({ field }) => (
-            <div className={'flex justify-between items-center col-span-2'}>
+            <div className={'flex justify-between items-center col-start-1'}>
               <Typography>Бүртгэл № : </Typography>
               <Input disabled {...field} />
             </div>
@@ -206,11 +212,12 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           control={control}
           name="owner"
           render={({ field }) => (
-            <div className={'flex justify-between items-center col-span-2'}>
+            <div className={'grid items-center grid-cols-[0.22fr_0.25fr_0.53fr] col-span-2 gap-6'}>
               <Typography>Эзэмшигч : </Typography>
-              <Input {...field} disabled />
+              <Input {...field} disabled sx={{ width: '100%' }} />
               {customers && (
                 <Autocomplete
+                  sx={{ width: '50%' }}
                   onChange={(_, val: { firstname: string; lastname: string; id: string } | null) =>
                     setValue('owner', val ? val.id : '')
                   }
@@ -234,7 +241,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
               <Typography>Хөрөнгийн төрөл : </Typography>
               <Select
                 {...field}
-                sx={{ width: '60%' }}
+                sx={{ width: '50%' }}
                 onChange={(_, val: number | null) => {
                   if (val) {
                     setValue('assetType', val);
@@ -259,7 +266,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
               <Typography>Дэд төрөл : </Typography>
               <Select
                 {...field}
-                sx={{ width: '60%' }}
+                sx={{ width: '50%' }}
                 onChange={(_, val: number | null) => {
                   if (val) {
                     setValue('subAssetType', val);
@@ -303,9 +310,9 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
                   width: '50%',
                 }}
               >
-                <Option value="Барьцаанд байгаа">Барьцаанд байгаа</Option>
-                <Option value="Чөлөөлсөн">Чөлөөлсөн</Option>
-                <Option value="Борлуулсан">Борлуулсан</Option>
+                <Option value="HELD_ASSET">Барьцаанд байгаа</Option>
+                <Option value="RELEASED">Чөлөөлсөн</Option>
+                <Option value="SOLD">Борлуулсан</Option>
               </Select>
             </div>
           )}
@@ -364,7 +371,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
           render={({ field }) => (
             <div className={'flex justify-between items-center col-span-2'}>
               <Typography>Тайлбар : </Typography>
-              <Textarea {...field} />
+              <Textarea className="w-[76.5%]" {...field} />
             </div>
           )}
         />
@@ -373,26 +380,29 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
         subAssetType.find((subAsset) => subAsset.id === watch('subAssetType')) &&
         subAssetType.find((subAsset) => subAsset.id === watch('subAssetType')).additionalFields
           .length > 0 && (
-          <AccordionGroup>
+          <AccordionGroup sx={{ marginY: '14px' }}>
             <Accordion>
               <AccordionSummary>Нэмэлт</AccordionSummary>
               <AccordionDetails>
-                {subAssetType
-                  .find((subAsset) => subAsset.id === watch('subAssetType'))
-                  .additionalFields.map((fields) => (
-                    <Controller
-                      control={control}
-                      name={`additionalFields.${fields.name}`}
-                      render={({ field }) => {
-                        return (
-                          <>
-                            <Typography>{fields.name}</Typography>
-                            <Input {...field} />
-                          </>
-                        );
-                      }}
-                    />
-                  ))}
+                <div className="grid  grid-cols-2 gap-4">
+                  {subAssetType
+                    .find((subAsset) => subAsset.id === watch('subAssetType'))
+                    .additionalFields.map((fields) => (
+                      <Controller
+                        key={fields.name}
+                        control={control}
+                        name={`additionalFields.${fields.name}`}
+                        render={({ field }) => {
+                          return (
+                            <div className="flex justify-between items-center">
+                              <Typography>{fields.name}</Typography>
+                              <Input {...field} />
+                            </div>
+                          );
+                        }}
+                      />
+                    ))}
+                </div>
               </AccordionDetails>
             </Accordion>
           </AccordionGroup>

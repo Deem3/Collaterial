@@ -38,12 +38,28 @@ const CollateralContainer = () => {
     enabled: selectedCollateral !== undefined,
   });
 
+  const { data: editSales, isFetched: editSalesFetched } = useQuery({
+    queryKey: ['editSales', selectedCollateral],
+    queryFn: async () => {
+      const { data } = await axios.get(`api/collateral/sales`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access-token')}`,
+        },
+        params: {
+          id: selectedCollateral,
+        },
+      });
+      return data;
+    },
+    enabled: selectedCollateral !== undefined,
+  });
+
   return (
     <Box marginTop={10} paddingX={10} rowGap={8} display="flex" flexDirection="column">
       <Button
         sx={{
           borderRadius: '5px',
-          width: '15%',
+          maxWidth: '20%',
           padding: '10px',
         }}
         startDecorator={<AddOutlined />}
@@ -53,6 +69,7 @@ const CollateralContainer = () => {
         Барьцаа хөрөнгө бүртгэх
       </Button>
       <CollateralModal
+        editSales={editSalesFetched ? editSales[0] : undefined}
         id={collateralId}
         open={open}
         edit={isFetched ? editCollateralData[0] : undefined}

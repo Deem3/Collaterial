@@ -1,6 +1,6 @@
 export type CreateLend = {
   accountNumber: number;
-  debtorId: string;
+  debtorId: number;
   interestRate: number;
   loanAmount: number;
   termOfLoan: number;

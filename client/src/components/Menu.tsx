@@ -1,16 +1,16 @@
 import { mainColors } from '@/config/colorScheme';
-import { Box, Stack } from '@mui/joy';
-import MenuLink from './MenuLink';
+import { userAtom } from '@/store/auth';
 import {
   ContentPasteOutlined,
-  InsertDriveFileOutlined,
   GroupOutlined,
   HomeOutlined,
   InboxOutlined,
+  InsertDriveFileOutlined,
   PersonOutlineOutlined,
 } from '@mui/icons-material';
+import { Box, Stack } from '@mui/joy';
 import { useAtom } from 'jotai';
-import { userAtom } from '@/store/auth';
+import MenuLink from './MenuLink';
 
 const Menu = () => {
   const [user] = useAtom(userAtom);

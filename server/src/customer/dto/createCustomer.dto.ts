@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsEmail } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 
 export class CreateCustomerDto {
   @IsNotEmpty()
-  customerId: string;
+  customerId: bigint;
   @IsNotEmpty()
   surname: string;
   @IsNotEmpty()
@@ -38,7 +38,7 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   @IsNumber()
   @IsPositive()
-  monthlyIncome: number;
+  monthlyIncome: bigint;
   @IsNotEmpty()
   phone: {
     first: number;

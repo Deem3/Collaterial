@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 const CustomerTable = () => {
-  const { data, isLoading, isFetched } = useQuery({
+  const { data, isFetched } = useQuery({
     queryKey: ['getCustomers'],
     queryFn: async () => {
       const { data } = await axios.get('/api/customer/customers');

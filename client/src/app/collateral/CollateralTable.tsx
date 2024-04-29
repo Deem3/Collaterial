@@ -1,8 +1,9 @@
 import { MoreVertOutlined } from '@mui/icons-material';
 import { Dropdown, Menu, MenuButton, MenuItem, Sheet, Table, Typography } from '@mui/joy';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent } from 'react';
+import { collateralStateConverter } from './helper';
 
 type CollateralTableProps = {
   setId: (id: number) => void;
@@ -10,8 +11,9 @@ type CollateralTableProps = {
 };
 
 const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOpen }) => {
+  const queryClient = useQueryClient();
   const { data: collateralData } = useQuery({
-    queryKey: ['collaterals'],
+    queryKey: ['collateralsTableData'],
     queryFn: async () => {
       const { data } = await axios.get('api/collateral/', {
         headers: {
@@ -46,6 +48,25 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
     },
   });
 
+  const deleteCollateral = useMutation({
+    mutationFn: async (id: number) => {
+      await axios.delete('api/collateral/', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access-token')}`,
+        },
+        params: {
+          id,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collateralsTableData'] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['collateralsTableData'] });
+    },
+  });
+
   return (
     <Sheet sx={{ height: '600px', overflow: 'auto' }}>
       <Table size="md" stickyHeader variant="outlined">
@@ -66,14 +87,14 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
             collateralData.map((collateral) => (
               <tr key={collateral.id}>
                 <td>{collateral.id}</td>
-                <td>{customers.find((c) => c.id == collateral.ownerId).firstname}</td>
-                <td>{assetTypes.find((a) => a.id == collateral.assetTypeId).name}</td>
+                <td>{customers?.find((c) => c.id == collateral.ownerId).firstname}</td>
+                <td>{assetTypes?.find((a) => a.id == collateral.assetTypeId).name}</td>
                 <td>
                   {subAssetTypes &&
                     subAssetTypes.find((s) => s.id == collateral.subAssetTypeId).name}
                 </td>
                 <td>{collateral.collateralName}</td>
-                <td>{collateral.state}</td>
+                <td>{collateralStateConverter(collateral.state)}</td>
                 <td>
                   <Typography>Дэлгэрэнгүй</Typography>
                 </td>
@@ -89,7 +110,14 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
                           setOpen();
                         }}
                       >
-                        edit
+                        Засах
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          deleteCollateral.mutate(collateral.id);
+                        }}
+                      >
+                        Устгах
                       </MenuItem>
                     </Menu>
                   </Dropdown>
