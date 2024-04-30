@@ -5,3 +5,24 @@ export const formatDate = (date: Date) => {
 
   return `${year}/${month}/${day}`;
 };
+
+export type LendType = {
+  accountNumber: number;
+  debtorId: string;
+  endDate: Date;
+  interestRate: number;
+  loanAmount: number;
+  startDate: Date;
+  termOfLoan: number;
+};
+
+export type PaymentType = {
+  accountNumber: number;
+  id: string;
+  repaymentInfo: {
+    loanBalance: number;
+    paymentInterest: number;
+    paymentPeriod: Date;
+    principalRepayment: number;
+  }[];
+};

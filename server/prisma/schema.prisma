@@ -87,6 +87,8 @@ model Collateral {
   description      String
   additionalFields Json?
   sales            Sales[]
+  lendId           Int?
+  lend             Lend?        @relation(fields: [lendId], references: [accountNumber], onDelete: Cascade)
 }
 
 model Sales {
@@ -98,22 +100,21 @@ model Sales {
 }
 
 model Lend {
-  accountNumber Int       @id
+  accountNumber Int          @id
   debtorId      BigInt
-  debtor        Customer  @relation(fields: [debtorId], references: [id], onDelete: Cascade)
+  debtor        Customer     @relation(fields: [debtorId], references: [id], onDelete: Cascade)
   interestRate  Int
-  loanAmount    BigInt    @db.BigInt
+  loanAmount    BigInt       @db.BigInt
   termOfLoan    Int
   startDate     DateTime
   endDate       DateTime
   payment       Payment[]
+  collateral    Collateral[]
 }
 
 model Payment {
-  id                 String @id @default(uuid())
-  accountNumber      Int
-  lend               Lend   @relation(fields: [accountNumber], references: [accountNumber], onDelete: Cascade)
-  principalRepayment Int
-  interestRepayment  Int
-  loanBalance        Int
+  id            String @id @default(uuid())
+  accountNumber Int
+  lend          Lend   @relation(fields: [accountNumber], references: [accountNumber], onDelete: Cascade)
+  repaymentInfo Json[]
 }

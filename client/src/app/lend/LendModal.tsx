@@ -13,12 +13,18 @@ import { FunctionComponent } from 'react';
 import CollateralForm from './CollateralForm';
 import GeneralLendForm from './GeneralLendForm';
 import PaybackForm from './PaybackForm';
+import { LendType, PaymentType } from './helper';
 
 type LendModalProps = {
   open: boolean;
   close: () => void;
   customers: { firstname: string; id: string; lastname: string }[] | undefined;
   accountNumber: number;
+  refetchTable: () => void;
+  refetchAccount: () => void;
+  editLend: LendType;
+  editRepayment: PaymentType;
+  selectedId: number | undefined;
 };
 
 const LendModal: FunctionComponent<LendModalProps> = ({
@@ -26,6 +32,11 @@ const LendModal: FunctionComponent<LendModalProps> = ({
   close,
   customers,
   accountNumber,
+  refetchAccount,
+  refetchTable,
+  editLend,
+  editRepayment,
+  selectedId,
 }) => {
   return (
     <Modal open={open}>
@@ -46,13 +57,20 @@ const LendModal: FunctionComponent<LendModalProps> = ({
               <Tab disableIndicator>Барьцаа</Tab>
             </TabList>
             <TabPanel value={0}>
-              <GeneralLendForm accountNumber={accountNumber} customers={customers} close={close} />
+              <GeneralLendForm
+                refetchAccount={refetchAccount}
+                refetchTable={refetchTable}
+                accountNumber={accountNumber}
+                customers={customers}
+                close={close}
+                edit={editLend}
+              />
             </TabPanel>
             <TabPanel value={1}>
-              <PaybackForm close={close} />
+              <PaybackForm close={close} edit={editRepayment} />
             </TabPanel>
             <TabPanel value={2}>
-              <CollateralForm close={close} />
+              <CollateralForm id={selectedId} close={close} />
             </TabPanel>
           </Tabs>
         </Sheet>

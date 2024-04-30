@@ -17,7 +17,7 @@ const LendContainer = () => {
     },
   });
 
-  const { data: accountNumber } = useQuery({
+  const { data: accountNumber, refetch: refetchAccount } = useQuery({
     queryKey: ['lendAccountNumber'],
     queryFn: async () => {
       const { data } = await axios.get('api/lend/accountNumber', {
@@ -29,8 +29,8 @@ const LendContainer = () => {
     },
   });
 
-  const { data: lends } = useQuery({
-    queryKey: ['lends'],
+  const { data: lends, refetch: refetchTable } = useQuery({
+    queryKey: ['lendTableData'],
     queryFn: async () => {
       const { data } = await axios.get('api/lend/', {
         headers: {
@@ -39,6 +39,40 @@ const LendContainer = () => {
       });
       return data;
     },
+  });
+
+  const [selectedId, setSelectedId] = useState<number>();
+
+  const { data: lendById } = useQuery({
+    queryKey: ['lendId', selectedId],
+    queryFn: async () => {
+      const { data } = await axios.get('api/lend/byId', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access-token')}`,
+        },
+        params: {
+          id: selectedId,
+        },
+      });
+      return data;
+    },
+    enabled: !!selectedId,
+  });
+
+  const { data: repaymentById } = useQuery({
+    queryKey: ['repaymentById', selectedId],
+    queryFn: async () => {
+      const { data } = await axios.get('api/lend/repayment', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access-token')}`,
+        },
+        params: {
+          id: selectedId,
+        },
+      });
+      return data;
+    },
+    enabled: !!selectedId,
   });
 
   return (
@@ -56,12 +90,17 @@ const LendContainer = () => {
         Зээл бүртгэх
       </Button>
       <LendModal
+        editLend={lendById}
+        editRepayment={repaymentById}
+        refetchAccount={refetchAccount}
+        refetchTable={refetchTable}
         accountNumber={accountNumber}
         open={open}
         close={() => setOpen(false)}
         customers={customers}
+        selectedId={selectedId}
       />
-      <LendTable data={lends} />
+      <LendTable setOpen={() => setOpen(true)} setSelectedId={setSelectedId} data={lends} />
     </Box>
   );
 };

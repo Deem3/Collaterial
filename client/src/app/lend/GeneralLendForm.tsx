@@ -4,20 +4,27 @@ import { PercentOutlined } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Grid, Typography } from '@mui/joy';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { LendType } from './helper';
 
 type GeneralLendFormProps = {
   customers: { firstname: string; id: string; lastname: string }[] | undefined;
   accountNumber: number;
   close: () => void;
+  refetchTable: () => void;
+  refetchAccount: () => void;
+  edit: LendType;
 };
 
 const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
   customers,
   accountNumber,
   close,
+  refetchAccount,
+  refetchTable,
+  edit,
 }) => {
   const queryClient = useQueryClient();
   const formSchema = z.object({
@@ -30,10 +37,10 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
     endDate: z.coerce.date(),
   });
 
-  const { control, setValue, handleSubmit } = useForm<z.infer<typeof formSchema>>({
+  const { control, setValue, handleSubmit, reset } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      accountNumber: accountNumber + 1,
+      accountNumber: accountNumber,
       debtorId: '',
       interestRate: 3,
       loanAmount: 1,
@@ -43,16 +50,33 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
     },
   });
 
+  useEffect(() => {
+    if (edit) {
+      reset({
+        debtorId: edit.debtorId,
+        interestRate: edit.interestRate,
+        loanAmount: edit.loanAmount,
+        accountNumber: edit.accountNumber,
+        termOfLoan: edit.termOfLoan,
+        startDate: new Date(edit.startDate),
+        endDate: new Date(edit.endDate),
+      });
+    }
+  }, [edit, reset]);
+
   const createMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      axios.post('/api/lend/', data, {
+      await axios.post('/api/lend/', data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
         },
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lendId'] });
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['lendId', 'lendTableData'] });
+      refetchAccount();
+      refetchTable();
+      close();
     },
   });
 
@@ -94,9 +118,9 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
                   sx={{
                     width: '100%',
                   }}
-                  //   defaultValue={
-                  //     edit && customers ? customers.find((c) => c.id === edit.ownerId) : null
-                  //   }
+                  defaultValue={
+                    edit && customers ? customers.find((c) => c.id === edit.debtorId) : null
+                  }
                   options={customers}
                   getOptionLabel={(customer) => customer.firstname}
                   getOptionKey={(customer) => customer.id}

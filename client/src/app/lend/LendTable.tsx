@@ -15,9 +15,11 @@ type LendTableProps = {
     startDate: Date;
     endDate: Date;
   }[];
+  setSelectedId: (id: number) => void;
+  setOpen: () => void;
 };
 
-const LendTable: FunctionComponent<LendTableProps> = ({ data }) => {
+const LendTable: FunctionComponent<LendTableProps> = ({ data, setSelectedId, setOpen }) => {
   const { data: customers } = useQuery({
     queryKey: ['customerForLend'],
     queryFn: async () => {
@@ -59,7 +61,14 @@ const LendTable: FunctionComponent<LendTableProps> = ({ data }) => {
                       <MoreVertOutlined />
                     </MenuButton>
                     <Menu>
-                      <MenuItem>edit</MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setSelectedId(d.accountNumber);
+                          setOpen();
+                        }}
+                      >
+                        edit
+                      </MenuItem>
                     </Menu>
                   </Dropdown>
                 </td>
