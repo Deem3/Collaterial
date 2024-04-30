@@ -1,5 +1,6 @@
+import Input from '@/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Input, Select, Typography, Option } from '@mui/joy';
+import { Box, Button, Option, Select, Typography } from '@mui/joy';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent, useEffect } from 'react';
@@ -72,7 +73,7 @@ const AddSubAssetTypeForm: FunctionComponent<AddSubAssetTypeFormProps> = ({
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-y-2">
       <Controller
         control={control}
         name="id"
@@ -100,7 +101,7 @@ const AddSubAssetTypeForm: FunctionComponent<AddSubAssetTypeFormProps> = ({
           <div className="flex justify-between items-center">
             <Typography>Хөрөнгийн төрөл : </Typography>
             <Select
-              sx={{ width: '42%' }}
+              sx={{ width: '50%' }}
               {...field}
               onChange={(_, newValue: number | null) => {
                 if (newValue) {
@@ -118,11 +119,11 @@ const AddSubAssetTypeForm: FunctionComponent<AddSubAssetTypeFormProps> = ({
         )}
       />
       {fields.map((field, index) => (
-        <div key={field.id}>
+        <div key={field.id} className="gird gap-y-2">
           <Controller
             control={control}
             name={`additionalFields.${index}.name`}
-            render={({ field }) => <Input {...field} />}
+            render={({ field }) => <Input {...field} sx={{ width: '100%', marginY: '0.5rem' }} />}
           />
           <Controller
             control={control}
@@ -133,6 +134,7 @@ const AddSubAssetTypeForm: FunctionComponent<AddSubAssetTypeFormProps> = ({
                 onChange={(_, val: AdditionalFieldTypes | null) => {
                   if (val) setValue(`additionalFields.${index}.type`, val);
                 }}
+                sx={{ marginBottom: '0.5rem' }}
               >
                 {Object.values(AdditionalFieldTypes).map((value) => (
                   <Option key={value} value={value}>
@@ -142,10 +144,17 @@ const AddSubAssetTypeForm: FunctionComponent<AddSubAssetTypeFormProps> = ({
               </Select>
             )}
           />
-          <Button onClick={() => remove(index)}>Remove</Button>
+          <Button color="neutral" onClick={() => remove(index)}>
+            Remove
+          </Button>
         </div>
       ))}
-      <Button onClick={() => append({ name: '', type: AdditionalFieldTypes.STRING })}>Add</Button>
+      <Button
+        color="neutral"
+        onClick={() => append({ name: '', type: AdditionalFieldTypes.STRING })}
+      >
+        Add
+      </Button>
       <Box marginTop={2} display="flex" justifyContent="flex-end" columnGap={2}>
         <Button type="submit" color="neutral">
           Хадгалах

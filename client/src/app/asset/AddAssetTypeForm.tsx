@@ -1,5 +1,6 @@
+import Input from '@/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Input, Typography } from '@mui/joy';
+import { Box, Button, Typography } from '@mui/joy';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent, useEffect } from 'react';
@@ -53,7 +54,7 @@ const AddAssetTypeForm: FunctionComponent<AddAssetTypeFormProps> = ({ close, ope
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-y-2">
       <Controller
         control={control}
         name="id"
