@@ -1,7 +1,7 @@
+import { MoreVertOutlined } from '@mui/icons-material';
 import { IconButton, Sheet, Table } from '@mui/joy';
 import { FunctionComponent } from 'react';
 import { AssetTypeDataType } from './type';
-import { MoreVertOutlined } from '@mui/icons-material';
 
 type AssetTypeTableProps = {
   data?: AssetTypeDataType[];

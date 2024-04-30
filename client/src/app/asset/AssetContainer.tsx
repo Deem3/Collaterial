@@ -3,7 +3,7 @@ import { AddOutlined } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/joy';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddAssetModal from './AddAssetModal';
 import AssetTypeTable from './AssetTypeTable';
 import SubAssetTypeTable from './SubAssetTypeTable';
@@ -11,7 +11,7 @@ import SubAssetTypeTable from './SubAssetTypeTable';
 const AssetContainer = () => {
   const [tab, setTab] = useState<{ value: number; open: boolean }>({ value: 0, open: false });
 
-  const { data: assetType } = useQuery({
+  const { data: assetType, refetch: refetchAssetType } = useQuery({
     queryKey: ['assetType'],
     queryFn: async () => {
       const { data } = await axios.get('/api/asset/assetType', {
@@ -23,7 +23,7 @@ const AssetContainer = () => {
     },
   });
 
-  const { data: assetTypeId } = useQuery({
+  const { data: assetTypeId, refetch: refetchAssetId } = useQuery({
     queryKey: ['assetTypeId'],
     queryFn: async () => {
       const { data } = await axios.get('/api/asset/assetTypeId', {
@@ -35,7 +35,7 @@ const AssetContainer = () => {
     },
   });
 
-  const { data: subAssetTypeId } = useQuery({
+  const { data: subAssetTypeId, refetch: refetchSubAssetId } = useQuery({
     queryKey: ['subAssetTypeId'],
     queryFn: async () => {
       const { data } = await axios.get('/api/asset/subAssetTypeId', {
@@ -47,7 +47,7 @@ const AssetContainer = () => {
     },
   });
 
-  const { data: assetTypeData } = useQuery({
+  const { data: assetTypeData, refetch: refetchAssetTypeData } = useQuery({
     queryKey: ['assetTypeData'],
     queryFn: async () => {
       const { data } = await axios.get('/api/asset/all/assetType', {
@@ -58,7 +58,7 @@ const AssetContainer = () => {
       return data;
     },
   });
-  const { data: subAssetTypeData } = useQuery({
+  const { data: subAssetTypeData, refetch: refetchTable } = useQuery({
     queryKey: ['subAssetTypeData'],
     queryFn: async () => {
       const { data } = await axios.get('/api/asset/all/subAssetType', {
@@ -69,6 +69,16 @@ const AssetContainer = () => {
       return data;
     },
   });
+
+  useEffect(() => {
+    if (tab.open == false) {
+      refetchAssetType();
+      refetchAssetTypeData();
+      refetchAssetId();
+      refetchSubAssetId();
+      refetchTable();
+    }
+  }, [tab.open]);
 
   return (
     <Box height="100vh">
