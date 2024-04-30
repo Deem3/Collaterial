@@ -1,8 +1,10 @@
+import { refetchAtom } from '@/store/refetch';
 import { MoreVertOutlined } from '@mui/icons-material';
 import { Dropdown, Menu, MenuButton, MenuItem, Sheet, Table, Typography } from '@mui/joy';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { FunctionComponent } from 'react';
+import { useAtom } from 'jotai';
+import { FunctionComponent, useEffect } from 'react';
 import { collateralStateConverter } from './helper';
 
 type CollateralTableProps = {
@@ -12,7 +14,7 @@ type CollateralTableProps = {
 
 const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOpen }) => {
   const queryClient = useQueryClient();
-  const { data: collateralData } = useQuery({
+  const { data: collateralData, refetch: refetchColTable } = useQuery({
     queryKey: ['collateralsTableData'],
     queryFn: async () => {
       const { data } = await axios.get('api/collateral/', {
@@ -23,6 +25,14 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
       return data;
     },
   });
+
+  const [_, setRefetchDatas] = useAtom(refetchAtom);
+
+  useEffect(() => {
+    if (collateralData) {
+      setRefetchDatas({ refetchColTable });
+    }
+  }, [collateralData, setRefetchDatas]);
 
   const { data: customers } = useQuery({
     queryKey: ['customerForCollateral'],

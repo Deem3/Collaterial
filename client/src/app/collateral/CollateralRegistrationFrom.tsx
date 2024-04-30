@@ -1,4 +1,5 @@
 import Input from '@/components/ui/Input';
+import { refetchAtom } from '@/store/refetch';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Accordion,
@@ -16,6 +17,7 @@ import {
 } from '@mui/joy';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { useAtom } from 'jotai';
 import { FunctionComponent, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -34,6 +36,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
   close,
   resetEdit,
 }) => {
+  const [refetchData, _] = useAtom(refetchAtom);
   const queryClient = useQueryClient();
   const AddCollateralFormSchema = z.object({
     id: z.coerce.number(),
@@ -161,6 +164,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
+      refetchData?.refetchColTable();
       close();
     },
     onError: () => {
@@ -177,6 +181,7 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
       });
     },
     onSuccess: () => {
+      refetchData?.refetchColTable();
       queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
       close();
     },
