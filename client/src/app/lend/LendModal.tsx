@@ -25,6 +25,7 @@ type LendModalProps = {
   editLend: LendType;
   editRepayment: PaymentType;
   selectedId: number | undefined;
+  selectedOwnerId: Uint8Array | undefined;
 };
 
 const LendModal: FunctionComponent<LendModalProps> = ({
@@ -37,16 +38,13 @@ const LendModal: FunctionComponent<LendModalProps> = ({
   editLend,
   editRepayment,
   selectedId,
+  selectedOwnerId,
 }) => {
   return (
-    <Modal open={open}>
+    <Modal open={open} style={{ zIndex: 2 }}>
       <ModalDialog sx={{ minHeight: '60%' }} minWidth="50%">
         <Sheet sx={{ minHeight: '50%', maxHeight: '80%', overflow: 'auto' }}>
-          <ModalClose
-            onClick={() => {
-              close();
-            }}
-          />
+          <ModalClose onClick={() => close()} />
           <Typography fontWeight="bold" marginY="16px" marginLeft={2}>
             Зээлийн данс
           </Typography>
@@ -70,7 +68,7 @@ const LendModal: FunctionComponent<LendModalProps> = ({
               <PaybackForm close={close} edit={editRepayment} />
             </TabPanel>
             <TabPanel value={2}>
-              <CollateralForm id={selectedId} close={close} />
+              <CollateralForm id={selectedId} ownerId={selectedOwnerId} close={close} />
             </TabPanel>
           </Tabs>
         </Sheet>

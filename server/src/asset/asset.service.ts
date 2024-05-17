@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { additionalFields } from './dto/subAsset.dto';
 
@@ -14,6 +14,42 @@ export class AssetService {
       },
     });
     return assetType;
+  }
+
+  async deleteAsset(id: number) {
+    const asset = await this.prisma.assetType.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!asset) {
+      throw new NotFoundException('Asset not found');
+    }
+
+    await this.prisma.assetType.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async deleteSubAsset(id: number) {
+    const subAsset = await this.prisma.subAssetType.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!subAsset) {
+      throw new NotFoundException('SubAsset not found');
+    }
+
+    await this.prisma.subAssetType.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 
   async createSubAssetType(payload: {

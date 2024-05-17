@@ -5,6 +5,7 @@ import CollateralContainer from './app/collateral/CollateralContainer';
 import CustomerContainer from './app/customer/CustomerContainer';
 import LendContainer from './app/lend/LendContainer';
 import LoginContainer from './app/login/LoginContainer';
+import ReportContainer from './app/report/ReportContainer';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const Router = () => {
@@ -13,6 +14,7 @@ const Router = () => {
       <Route path="/login" element={<LoginContainer />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<HomeContainer />} />
+        <Route path="/report" element={<ReportContainer />} />
       </Route>
       <Route element={<ProtectedRoute role="EMPLOYEE" />}>
         <Route path="/customer" element={<CustomerContainer />} />

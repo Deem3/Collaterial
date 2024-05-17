@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ROLE } from '@prisma/client';
 import { Roles } from 'src/decorator/roles.decorator';
 import { RolesGuard } from 'src/guard/roles.guard';
 import { CreateLend } from './dto/createLend.dto';
+import { UpdateLend } from './dto/updateLend.dto';
 import { UpdateRepayment } from './dto/updateRepayment.dto';
 import { LendService } from './lend.service';
 
@@ -22,6 +23,13 @@ export class LendController {
   @Post('/')
   async createLend(@Body() payload: CreateLend) {
     return this.lendService.createLend(payload);
+  }
+
+  @Roles(ROLE.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Put('/')
+  async updateLend(@Body() payload: UpdateLend) {
+    return this.lendService.updateLend(payload);
   }
 
   @Roles(ROLE.EMPLOYEE)
@@ -58,5 +66,18 @@ export class LendController {
   @Get('/collateral')
   async getCollateral(@Query('id') id: number) {
     return await this.lendService.getCollateralById(id);
+  }
+
+  @Delete('/collateral')
+  async deleteCollateral(
+    @Query('lendId') lendId: number,
+    @Query('collateralId') collateralId: number,
+  ) {
+    return await this.lendService.deleteCollateral(collateralId, lendId);
+  }
+
+  @Delete('/')
+  async deleteLend(@Query('id') id: number) {
+    return await this.lendService.deleteLend(id);
   }
 }

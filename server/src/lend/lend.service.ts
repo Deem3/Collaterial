@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { generateId } from 'src/utils/generateId';
 import { PrismaService } from './../../prisma/prisma.service';
 import { CreateLend } from './dto/createLend.dto';
+import { UpdateLend } from './dto/updateLend.dto';
 import { UpdateRepayment } from './dto/updateRepayment.dto';
 
 @Injectable()
@@ -41,19 +42,53 @@ export class LendService {
     };
   }
 
+  async updateLend(payload: UpdateLend) {
+    const updatedLend = await this.prisma.lend.update({
+      where: {
+        accountNumber: payload.accountNumber,
+      },
+      data: {
+        interestRate: payload.interestRate,
+        loanAmount: payload.loanAmount,
+        endDate: payload.endDate,
+        startDate: payload.startDate,
+        termOfLoan: payload.termOfLoan,
+        debtorId: BigInt(payload.debtorId),
+      },
+    });
+
+    const part = Math.floor(payload.loanAmount / payload.termOfLoan);
+    const lastPart = payload.loanAmount - (payload.termOfLoan - 1) * part;
+
+    await this.prisma.payment.updateMany({
+      where: {
+        accountNumber: payload.accountNumber,
+      },
+      data: {
+        repaymentInfo: {
+          set: Array.from({ length: payload.termOfLoan }, (_, i) => {
+            return {
+              loanBalance: i === payload.termOfLoan - 1 ? lastPart : part,
+            };
+          }),
+        },
+      },
+    });
+
+    return updatedLend;
+  }
+
   async createLend(payload: CreateLend) {
     const existingLend = await this.prisma.lend.findUnique({
       where: { accountNumber: payload.accountNumber },
     });
 
-    // If a lend record with the given accountNumber already exists, throw an error
     if (existingLend) {
-      throw new Error(
+      throw new ConflictException(
         `A lend record with the account number ${payload.accountNumber} already exists.`,
       );
     }
 
-    // If a lend record with the given accountNumber doesn't exist, create a new lend record
     const data = await this.prisma.lend.create({
       data: {
         interestRate: payload.interestRate,
@@ -66,7 +101,8 @@ export class LendService {
       },
     });
 
-    const loanBalance = payload.loanAmount;
+    const part = Math.floor(payload.loanAmount / payload.termOfLoan);
+    const lastPart = payload.loanAmount - (payload.termOfLoan - 1) * part;
 
     const repaymentInfo = Array.from({ length: payload.termOfLoan }, (_, i) => {
       const paymentDate = new Date(payload.startDate);
@@ -75,7 +111,7 @@ export class LendService {
       return {
         principalRepayment: 0,
         paymentInterest: 0,
-        loanBalance,
+        loanBalance: i === payload.termOfLoan - 1 ? lastPart : part,
         paymentPeriod: paymentDate,
       };
     });
@@ -107,13 +143,18 @@ export class LendService {
   }
 
   async updateRepayment(payload: UpdateRepayment) {
+    const updatedRepaymentInfo = payload.repaymentInfo.map((info) => ({
+      ...info,
+      loanBalance: info.loanBalance - info.principalRepayment,
+    }));
+
     return await this.prisma.payment.update({
       where: {
         id: payload.id,
       },
       data: {
         repaymentInfo: {
-          set: payload.repaymentInfo,
+          set: updatedRepaymentInfo,
         },
       },
     });
@@ -167,5 +208,58 @@ export class LendService {
       id: c.id.toString(),
       ownerId: c.ownerId.toString(),
     }));
+  }
+
+  async deleteLend(id: number) {
+    const lend = await this.prisma.lend.findUnique({
+      where: { accountNumber: id },
+      include: {
+        collateral: true,
+      },
+    });
+
+    if (!lend) {
+      throw new NotFoundException(`Lend with id ${id} not found`);
+    }
+
+    // Disconnect the relationship between the Lend and all related Collateral records
+    for (const collateral of lend.collateral) {
+      await this.prisma.collateral.update({
+        where: { id: collateral.id },
+        data: { lendId: null },
+      });
+    }
+
+    await this.prisma.lend.delete({
+      where: { accountNumber: id },
+    });
+  }
+
+  async deleteCollateral(collateralId: number, lendId: number) {
+    const collateralOnLend = await this.prisma.lend.findUnique({
+      where: {
+        accountNumber: lendId,
+        collateral: {
+          some: {
+            id: collateralId,
+          },
+        },
+      },
+    });
+
+    if (!collateralOnLend) {
+      throw new NotFoundException(`Collateral with ${collateralId} not found on lend of ${lendId}`);
+    }
+
+    await this.prisma.lend.update({
+      where: { accountNumber: lendId },
+      data: {
+        collateral: {
+          disconnect: {
+            id: collateralId,
+          },
+        },
+      },
+    });
   }
 }

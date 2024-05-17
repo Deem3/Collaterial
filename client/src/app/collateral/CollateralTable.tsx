@@ -1,10 +1,11 @@
+import DeleteModal from '@/components/DeleteModal';
 import { refetchAtom } from '@/store/refetch';
 import { MoreVertOutlined } from '@mui/icons-material';
 import { Dropdown, Menu, MenuButton, MenuItem, Sheet, Table, Typography } from '@mui/joy';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAtom } from 'jotai';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { collateralStateConverter } from './helper';
 
 type CollateralTableProps = {
@@ -14,6 +15,8 @@ type CollateralTableProps = {
 
 const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOpen }) => {
   const queryClient = useQueryClient();
+  const [deleteId, setDeleteId] = useState<number>();
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const { data: collateralData, refetch: refetchColTable } = useQuery({
     queryKey: ['collateralsTableData'],
     queryFn: async () => {
@@ -25,7 +28,6 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
       return data;
     },
   });
-
   const [_, setRefetchDatas] = useAtom(refetchAtom);
 
   useEffect(() => {
@@ -33,7 +35,6 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
       setRefetchDatas({ refetchColTable });
     }
   }, [collateralData, setRefetchDatas]);
-
   const { data: customers } = useQuery({
     queryKey: ['customerForCollateral'],
     queryFn: async () => {
@@ -59,21 +60,19 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
   });
 
   const deleteCollateral = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async () => {
       await axios.delete('api/collateral/', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
         },
         params: {
-          id,
+          id: deleteId,
         },
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralsTableData'] });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralsTableData'] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['collateralsTableData'] });
+      setDeleteModalOpen(false);
     },
   });
 
@@ -124,7 +123,8 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
                       </MenuItem>
                       <MenuItem
                         onClick={() => {
-                          deleteCollateral.mutate(collateral.id);
+                          setDeleteId(collateral.id);
+                          setDeleteModalOpen(true);
                         }}
                       >
                         Устгах
@@ -136,6 +136,15 @@ const CollateralTable: FunctionComponent<CollateralTableProps> = ({ setId, setOp
             ))}
         </tbody>
       </Table>
+      {deleteId && (
+        <DeleteModal
+          deleteFn={() => deleteCollateral.mutate()}
+          close={() => setDeleteModalOpen(false)}
+          id={deleteId}
+          open={deleteModalOpen}
+          type="collateral"
+        />
+      )}
     </Sheet>
   );
 };

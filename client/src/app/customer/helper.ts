@@ -74,6 +74,10 @@ export const AddCustomerFormSchema = z.object({
   userId: z.string(),
 });
 
+export type CustomerDataType = Omit<z.infer<typeof AddCustomerFormSchema>, 'userId'> & {
+  id: number;
+};
+
 export enum DISTRICT {
   ULAANBAATAR_BAGANUUR = 'Багануур',
   ULAANBAATAR_BAGAKHANGAI = 'Багахангай',

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Query } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/createCustomer.dto';
 
@@ -16,6 +16,11 @@ export class CustomerController {
     return this.customerService.getId();
   }
 
+  @Delete('/')
+  async delete(@Query('id') id: number) {
+    return this.customerService.delete(id);
+  }
+
   @Get('/customers')
   async getCustomers() {
     return this.customerService.getCustomers();
@@ -24,5 +29,15 @@ export class CustomerController {
   @Get('/customersName')
   async getCustomersName() {
     return this.customerService.getCustomersName();
+  }
+
+  @Get('/byId')
+  async getById(@Query('id') id: number) {
+    return this.customerService.getCustomerById(id);
+  }
+
+  @Put('/')
+  async update(@Body() payload: CreateCustomerDto) {
+    return this.customerService.update(payload);
   }
 }

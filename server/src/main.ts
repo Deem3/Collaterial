@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { BigIntToStringInterceptor } from './interceptor/ BigIntToStringInterceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new BigIntToStringInterceptor());
   app.setGlobalPrefix('api');
   await app.listen(process.env.PORT);
 }

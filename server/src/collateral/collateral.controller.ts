@@ -13,6 +13,13 @@ export class CollateralController {
 
   @Roles(ROLE.EMPLOYEE)
   @UseGuards(RolesGuard)
+  @Get('/byOwner')
+  async getCollateralByOwner(@Query('ownerId') ownerId: number) {
+    return this.collateralService.getCollateralByOwnerId(ownerId);
+  }
+
+  @Roles(ROLE.EMPLOYEE)
+  @UseGuards(RolesGuard)
   @Post('/')
   async createCollateral(@Body() payload: CreateCollateralDto) {
     return this.collateralService.createCollateral(payload);

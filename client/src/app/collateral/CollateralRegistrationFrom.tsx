@@ -36,8 +36,8 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
   close,
   resetEdit,
 }) => {
-  const [refetchData, _] = useAtom(refetchAtom);
   const queryClient = useQueryClient();
+  const [refetchData] = useAtom(refetchAtom);
   const AddCollateralFormSchema = z.object({
     id: z.coerce.number(),
     owner: z.string(),
@@ -156,37 +156,31 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
 
   const createMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      axios.post('/api/collateral/', data, {
+      await axios.post('/api/collateral/', data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
         },
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
       refetchData?.refetchColTable();
       close();
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      axios.put('/api/collateral/', data, {
+      await axios.put('/api/collateral/', data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
         },
       });
     },
-    onSuccess: () => {
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
       refetchData?.refetchColTable();
-      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
       close();
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['collateralId', 'collateralsTableData'] });
     },
   });
 
@@ -382,17 +376,17 @@ const CollateralRegistrationFrom: FunctionComponent<collateralRegistrationFromPr
         />
       </Grid>
       {subAssetTypeIsFetched &&
-        subAssetType.find((subAsset) => subAsset.id === watch('subAssetType')) &&
-        subAssetType.find((subAsset) => subAsset.id === watch('subAssetType')).additionalFields
-          .length > 0 && (
+        subAssetType.find((subAsset: { id: number }) => subAsset.id === watch('subAssetType')) &&
+        subAssetType.find((subAsset: { id: number }) => subAsset.id === watch('subAssetType'))
+          .additionalFields.length > 0 && (
           <AccordionGroup sx={{ marginY: '14px' }}>
             <Accordion>
               <AccordionSummary>Нэмэлт</AccordionSummary>
               <AccordionDetails>
                 <div className="grid  grid-cols-2 gap-4">
                   {subAssetType
-                    .find((subAsset) => subAsset.id === watch('subAssetType'))
-                    .additionalFields.map((fields) => (
+                    .find((subAsset: { id: number }) => subAsset.id === watch('subAssetType'))
+                    .additionalFields.map((fields: { name: string }) => (
                       <Controller
                         key={fields.name}
                         control={control}

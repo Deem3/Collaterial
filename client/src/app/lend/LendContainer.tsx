@@ -42,6 +42,7 @@ const LendContainer = () => {
   });
 
   const [selectedId, setSelectedId] = useState<number>();
+  const [selectedOwnerId, setSelectedOwnerId] = useState<Uint8Array>();
 
   const { data: lendById } = useQuery({
     queryKey: ['lendId', selectedId],
@@ -54,6 +55,7 @@ const LendContainer = () => {
           id: selectedId,
         },
       });
+      setEditLend(data);
       return data;
     },
     enabled: !!selectedId,
@@ -70,10 +72,21 @@ const LendContainer = () => {
           id: selectedId,
         },
       });
+      setEditRepayment(data);
       return data;
     },
     enabled: !!selectedId,
   });
+  const [editLend, setEditLend] = useState(lendById);
+  const [editRepayment, setEditRepayment] = useState(repaymentById);
+
+  const close = () => {
+    setOpen(false);
+    setSelectedId(undefined);
+    setSelectedOwnerId(undefined);
+    setEditLend(undefined);
+    setEditRepayment(undefined);
+  };
 
   return (
     <Box marginTop={10} paddingX={10} rowGap={8} display="flex" flexDirection="column">
@@ -90,17 +103,23 @@ const LendContainer = () => {
         Зээл бүртгэх
       </Button>
       <LendModal
-        editLend={lendById}
-        editRepayment={repaymentById}
+        editLend={editLend}
+        editRepayment={editRepayment}
         refetchAccount={refetchAccount}
         refetchTable={refetchTable}
         accountNumber={accountNumber}
         open={open}
-        close={() => setOpen(false)}
+        close={() => close()}
         customers={customers}
         selectedId={selectedId}
+        selectedOwnerId={selectedOwnerId}
       />
-      <LendTable setOpen={() => setOpen(true)} setSelectedId={setSelectedId} data={lends} />
+      <LendTable
+        setOpen={() => setOpen(true)}
+        setSelectedOwnerId={setSelectedOwnerId}
+        setSelectedId={setSelectedId}
+        data={lends}
+      />
     </Box>
   );
 };

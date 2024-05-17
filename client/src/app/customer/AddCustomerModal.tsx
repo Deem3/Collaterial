@@ -15,12 +15,13 @@ import {
 } from '@mui/joy';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
   AddCustomerFormSchema,
   CITY,
+  CustomerDataType,
   DISTRICT,
   EDUCATION_STATUS,
   GENDER,
@@ -31,16 +32,25 @@ type AddCustomerModalProps = {
   open: boolean;
   close: () => void;
   userId?: string;
+  edit: CustomerDataType | undefined;
 };
 
 const controllerDivStyle = 'flex items-center justify-between';
 
-const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, close, userId }) => {
+const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({
+  open,
+  close,
+  userId,
+  edit,
+}) => {
   const queryClient = useQueryClient();
   const CustomerMutation = useMutation({
     mutationFn: async (data: z.infer<typeof AddCustomerFormSchema>) => {
-      console.log('hello');
-      axios.post('/api/customer/', data);
+      if (edit) {
+        axios.put(`/api/customer/`, data);
+      } else {
+        axios.post('/api/customer/', data);
+      }
     },
     onSuccess: () => {
       close();
@@ -59,12 +69,16 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
     enabled: open,
   });
 
-  const { control, setValue, handleSubmit, formState, reset } = useForm<
-    z.infer<typeof AddCustomerFormSchema>
-  >({
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<z.infer<typeof AddCustomerFormSchema>>({
     resolver: zodResolver(AddCustomerFormSchema),
     defaultValues: {
-      userId: userId,
+      userId,
       email: '',
       firstname: '',
       lastname: '',
@@ -85,12 +99,68 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
         second: 0,
       },
       gender: GENDER.MALE,
-      customerId: isFetched ? data : 0,
+      customerId: edit?.id ?? 0,
       birthdate: new Date(),
     },
   });
 
-  console.log(formState.errors);
+  console.log(errors);
+
+  useEffect(() => {
+    if (edit) {
+      reset({
+        userId,
+        email: edit.email,
+        firstname: edit.firstname,
+        lastname: edit.lastname,
+        surname: edit.surname,
+        register: edit.register,
+        familyMembers: edit.familyMembers,
+        employment: edit.employment,
+        address: edit.address,
+        district: edit.district,
+        city: edit.city,
+        education: edit.education,
+        marriageStatus: edit.marriageStatus,
+        civilRegistrationNumber: edit.civilRegistrationNumber,
+        khoroo: edit.khoroo,
+        monthlyIncome: edit.monthlyIncome,
+        phone: {
+          first: edit.phone.first,
+          second: edit.phone.second,
+        },
+        gender: edit.gender,
+        customerId: edit ? edit.id : 0,
+        birthdate: new Date(edit.birthdate),
+      });
+    } else {
+      reset({
+        userId,
+        email: '',
+        firstname: '',
+        lastname: '',
+        surname: '',
+        register: '',
+        familyMembers: 0,
+        employment: '',
+        address: '',
+        district: DISTRICT.ULAANBAATAR_BAYANGOL,
+        city: CITY.ULAANBAATAR,
+        education: EDUCATION_STATUS.HIGH_SCHOOL,
+        marriageStatus: MARRIAGE_STATUS.SINGLE,
+        civilRegistrationNumber: '',
+        khoroo: '',
+        monthlyIncome: 0,
+        phone: {
+          first: 0,
+          second: 0,
+        },
+        gender: GENDER.MALE,
+        customerId: isFetched ? data : 0,
+        birthdate: new Date(),
+      });
+    }
+  }, [reset, edit, open]); // Add open as a dependency
   // const [selectedCity, setSelectedCity] = useState<CITY>(CITY.ULAANBAATAR);
 
   const onSubmit = (data: z.infer<typeof AddCustomerFormSchema>) => {
@@ -143,7 +213,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
                         }
                       />
                     )}
-                    {isFetched && <Input {...field} value={data} disabled />}
+                    {isFetched && <Input {...field} disabled />}
                   </div>
                 )}
               />
@@ -427,7 +497,7 @@ const AddCustomerModal: FunctionComponent<AddCustomerModalProps> = ({ open, clos
             </Button>
             <Button
               onClick={() => {
-                reset(), close();
+                close();
               }}
               color="neutral"
             >

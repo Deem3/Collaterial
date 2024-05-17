@@ -15,7 +15,7 @@ type GeneralLendFormProps = {
   close: () => void;
   refetchTable: () => void;
   refetchAccount: () => void;
-  edit: LendType;
+  edit: LendType | undefined;
 };
 
 const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
@@ -80,8 +80,24 @@ const GeneralLendForm: FunctionComponent<GeneralLendFormProps> = ({
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      await axios.put('/api/lend/', data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access-token')}`,
+        },
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['lendId', 'lendTableData'] });
+      refetchAccount();
+      refetchTable();
+      close();
+    },
+  });
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    createMutation.mutate(data);
+    edit ? updateMutation.mutate(data) : createMutation.mutate(data);
   };
 
   return (

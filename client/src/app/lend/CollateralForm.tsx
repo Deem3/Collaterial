@@ -9,6 +9,7 @@ import {
   MenuItem,
   Sheet,
   Table,
+  Tooltip,
   Typography,
 } from '@mui/joy';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -19,19 +20,28 @@ import { collateralStateConverter, EditType } from '../collateral/helper';
 type CollateralFormProps = {
   close: () => void;
   id: number | undefined;
+  ownerId: Uint8Array | undefined;
 };
 
-const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) => {
-  const { data: collaterals, isLoading } = useQuery<EditType>({
-    queryKey: ['collaterals'],
+const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id, ownerId }) => {
+  const {
+    data: collateralsByOwnerId,
+    isLoading,
+    refetch: collateralsByOwnerRefetch,
+  } = useQuery<EditType>({
+    queryKey: ['collateralsByOwner', ownerId],
     queryFn: async () => {
-      const { data } = await axios.get('/api/collateral', {
+      const { data } = await axios.get('/api/collateral/byOwner', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
+        },
+        params: {
+          ownerId,
         },
       });
       return data;
     },
+    enabled: !!ownerId,
   });
 
   const {
@@ -41,6 +51,7 @@ const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) =
   } = useQuery<EditType[]>({
     queryKey: ['collateralById', id],
     queryFn: async () => {
+      if (id === undefined) return [];
       const { data } = await axios.get('/api/lend/collateral', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access-token')}`,
@@ -66,6 +77,7 @@ const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) =
     },
     onSettled: () => {
       refetch();
+      collateralsByOwnerRefetch();
     },
   });
 
@@ -93,6 +105,19 @@ const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) =
     },
   });
 
+  // delete modal
+  const deleteMutation = useMutation({
+    mutationFn: async (collateralId: number) => {
+      await axios.delete('/api/lend/collateral', {
+        params: { collateralId: collateralId, lendId: id },
+      });
+    },
+    onSettled: async () => {
+      refetch();
+      collateralsByOwnerRefetch();
+    },
+  });
+
   return (
     <>
       <Autocomplete
@@ -102,11 +127,12 @@ const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) =
           width: 'fit-content',
           marginY: '20px',
         }}
+        // disabled={!id}
         startDecorator={<AddOutlined />}
         color="neutral"
         placeholder="Барьцаа хөрөнгө бүртгэх"
         loading={isLoading}
-        options={collaterals}
+        options={collateralsByOwnerId}
         getOptionLabel={(collaterals) => collaterals.collateralName}
         getOptionKey={(collaterals) => collaterals.id}
         onChange={(_, val: EditType | null) => setSelectedId(val?.id)}
@@ -115,12 +141,36 @@ const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) =
         <Table size="md" stickyHeader variant="outlined">
           <thead>
             <tr>
-              <th>Бүртгэл №</th>
-              <th>Эзэмшигч</th>
-              <th>Хөрөнгийн төрөл</th>
-              <th>Дэд төрөл</th>
-              <th>Барьцааны нэр</th>
-              <th>Төлөв</th>
+              <th>
+                <Tooltip placement="top" title="Бүртгэл №">
+                  <Typography>Бүртгэл №</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Эзэмшигч">
+                  <Typography>Эзэмшигч</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Хөрөнгийн төрөл">
+                  <Typography>Хөрөнгийн төрөл</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Дэд төрөл">
+                  <Typography>Дэд төрөл</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Барьцааны нэр">
+                  <Typography>Барьцааны нэр</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Төлөв">
+                  <Typography>Төлөв</Typography>
+                </Tooltip>
+              </th>
               <th></th>
               <th></th>
             </tr>
@@ -146,9 +196,18 @@ const CollateralForm: FunctionComponent<CollateralFormProps> = ({ close, id }) =
                       <MenuButton>
                         <MoreVertOutlined />
                       </MenuButton>
-                      <Menu>
-                        <MenuItem>Засах</MenuItem>
-                        <MenuItem>Устгах</MenuItem>
+                      <Menu
+                        style={{
+                          zIndex: 3,
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            deleteMutation.mutate(collateral.id);
+                          }}
+                        >
+                          Устгах
+                        </MenuItem>
                       </Menu>
                     </Dropdown>
                   </td>

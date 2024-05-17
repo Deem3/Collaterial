@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ROLE } from '@prisma/client';
 import { Roles } from 'src/decorator/roles.decorator';
-import { AssetService } from './asset.service';
 import { RolesGuard } from 'src/guard/roles.guard';
+import { AssetService } from './asset.service';
 import { additionalFields } from './dto/subAsset.dto';
 
 @Controller('asset')
@@ -37,6 +37,20 @@ export class AssetController {
     },
   ) {
     return this.assetService.createSubAssetType(payload);
+  }
+
+  @Roles(ROLE.MANAGER)
+  @UseGuards(RolesGuard)
+  @Delete('/')
+  async deleteAsset(@Query('id') id: number) {
+    return this.assetService.deleteAsset(id);
+  }
+
+  @Roles(ROLE.MANAGER)
+  @UseGuards(RolesGuard)
+  @Delete('/subAsset')
+  async deleteSubAsset(@Query('id') id: number) {
+    return this.assetService.deleteSubAsset(id);
   }
 
   @Get('/assetType')

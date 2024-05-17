@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { generateId } from 'src/utils/generateId';
 import CreateCollateralDto from './dto/createCollateral.dto';
@@ -133,5 +133,26 @@ export class CollateralService {
         id: BigInt(id),
       },
     });
+  }
+
+  async getCollateralByOwnerId(ownerId: number) {
+    const collaterals = await this.prisma.collateral.findMany({
+      where: {
+        ownerId: BigInt(ownerId),
+      },
+      include: {
+        lend: true,
+      },
+    });
+    if (!collaterals) {
+      throw new NotFoundException('Collateral not found');
+    }
+    return collaterals
+      .filter((collateral) => !collateral.lend)
+      .map((collateral) => ({
+        ...collateral,
+        id: collateral.id.toString(),
+        ownerId: collateral.ownerId.toString(),
+      }));
   }
 }

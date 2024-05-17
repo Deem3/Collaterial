@@ -1,21 +1,40 @@
+import DeleteModal from '@/components/DeleteModal';
 import { MoreVertOutlined } from '@mui/icons-material';
-import { IconButton, Table, Typography } from '@mui/joy';
-import { useQuery } from '@tanstack/react-query';
+import { Dropdown, Menu, MenuButton, MenuItem, Table, Typography } from '@mui/joy';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { FunctionComponent, useState } from 'react';
 
-const CustomerTable = () => {
-  const { data, isFetched } = useQuery({
+type CustomerTableProps = {
+  setId: (id: number) => void;
+  setOpen: () => void;
+};
+
+const CustomerTable: FunctionComponent<CustomerTableProps> = ({ setId, setOpen }) => {
+  const { data, isFetched, refetch } = useQuery({
     queryKey: ['getCustomers'],
     queryFn: async () => {
       const { data } = await axios.get('/api/customer/customers');
       return data;
     },
   });
-
+  const [deleteId, setDeleteId] = useState<number | null>();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      await axios.delete('/api/customer', { params: { id: deleteId } });
+    },
+    onSettled: () => {
+      refetch();
+      setDeleteId(null);
+      setDeleteOpen(false);
+    },
+  });
   return (
     <>
       <Typography>Харилцагч</Typography>
       <Table
+        style={{ zIndex: 0 }}
         borderAxis="xBetween"
         size="md"
         stickyHeader
@@ -46,14 +65,43 @@ const CustomerTable = () => {
                 <th>{customer.email}</th>
                 <th>Дэлгэрэнгүй</th>
                 <th>
-                  <IconButton>
-                    <MoreVertOutlined />
-                  </IconButton>
+                  <Dropdown>
+                    <MenuButton>
+                      <MoreVertOutlined />
+                    </MenuButton>
+                    <Menu>
+                      <MenuItem
+                        onClick={() => {
+                          setId(customer.id);
+                          setOpen();
+                        }}
+                      >
+                        Засах
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setDeleteId(customer.id);
+                          setDeleteOpen(true);
+                        }}
+                      >
+                        Устгах
+                      </MenuItem>
+                    </Menu>
+                  </Dropdown>
                 </th>
               </tr>
             ))}
         </tbody>
       </Table>
+      {deleteId && (
+        <DeleteModal
+          close={() => setDeleteOpen(false)}
+          deleteFn={() => deleteMutation.mutate()}
+          id={deleteId}
+          open={deleteOpen}
+          type="customer"
+        />
+      )}
     </>
   );
 };

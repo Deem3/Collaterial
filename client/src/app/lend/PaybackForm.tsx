@@ -1,6 +1,6 @@
 import Input from '@/components/ui/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Sheet, Table } from '@mui/joy';
+import { Box, Button, Sheet, Table, Tooltip, Typography } from '@mui/joy';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionComponent, useEffect } from 'react';
@@ -10,7 +10,7 @@ import { formatDate, PaymentType } from './helper';
 
 type PaybackFormProps = {
   close: () => void;
-  edit: PaymentType;
+  edit: PaymentType | undefined;
 };
 
 const PaybackForm: FunctionComponent<PaybackFormProps> = ({ close, edit }) => {
@@ -19,20 +19,29 @@ const PaybackForm: FunctionComponent<PaybackFormProps> = ({ close, edit }) => {
     id: z.string(),
     accountNumber: z.coerce.number(),
     repaymentInfo: z.array(
-      z.object({
-        paymentPeriod: z.coerce.date(),
-        principalRepayment: z.coerce.number(),
-        paymentInterest: z.coerce.number(),
-        loanBalance: z.coerce.number(),
-      }),
+      z
+        .object({
+          paymentPeriod: z.coerce.date(),
+          principalRepayment: z.coerce.number(),
+          paymentInterest: z.coerce.number(),
+          loanBalance: z.coerce.number(),
+        })
+        .refine((data) => data.principalRepayment <= data.loanBalance, {
+          message: 'Үндсэн зээлийн төлөлт зээлийн үлдэгдлээс их байж болохгүй!',
+          path: ['principalRepayment'],
+        }),
     ),
   });
 
-  const { control, reset, handleSubmit, watch, formState } = useForm<z.infer<typeof formSchema>>({
+  const {
+    control,
+    reset,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-
-  console.log(formState.errors);
 
   const paybackMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
@@ -68,11 +77,31 @@ const PaybackForm: FunctionComponent<PaybackFormProps> = ({ close, edit }) => {
         <Table size="md" stickyHeader variant="outlined">
           <thead>
             <tr>
-              <th>Төлбөр хийх хугацаа</th>
-              <th>Үндсэн зээлийн төлөлт</th>
-              <th>Хүүгийн төлөлт</th>
-              <th>Нийт төлбөр</th>
-              <th>Зээлийн үлдэгдэл</th>
+              <th>
+                <Tooltip placement="top" title="Төлбөр хийх хугацаа">
+                  <Typography>Төлбөр хийх хугацаа</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Үндсэн зээлийн төлөлт">
+                  <Typography>Үндсэн зээлийн төлөлт</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Хүүгийн төлөлт">
+                  <Typography>Хүүгийн төлөлт</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Нийт төлбөр">
+                  <Typography>Нийт төлбөр</Typography>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip placement="top" title="Зээлийн үлдэгдэл">
+                  <Typography>Зээлийн үлдэгдэл</Typography>
+                </Tooltip>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -84,14 +113,22 @@ const PaybackForm: FunctionComponent<PaybackFormProps> = ({ close, edit }) => {
                     <Controller
                       control={control}
                       name={`repaymentInfo[${index}].principalRepayment`}
-                      render={({ field }) => <Input type="number" {...field} />}
+                      render={({ field }) => (
+                        <>
+                          <Input style={{ width: '100%' }} type="number" {...field} />
+                        </>
+                      )}
                     />
                   </td>
                   <td>
                     <Controller
                       control={control}
                       name={`repaymentInfo[${index}].paymentInterest`}
-                      render={({ field }) => <Input type="number" {...field} />}
+                      render={({ field }) => (
+                        <>
+                          <Input style={{ width: '100%' }} type="number" {...field} />
+                        </>
+                      )}
                     />
                   </td>
                   <td>
@@ -102,13 +139,28 @@ const PaybackForm: FunctionComponent<PaybackFormProps> = ({ close, edit }) => {
                     <Controller
                       control={control}
                       name={`repaymentInfo[${index}].loanBalance`}
-                      render={({ field }) => <Input {...field} type="number" />}
+                      render={({ field }) => (
+                        <>
+                          <Input
+                            disabled
+                            style={{
+                              width: '100%',
+                            }}
+                            {...field}
+                            type="number"
+                          />
+                        </>
+                      )}
                     />
                   </td>
                 </tr>
               ))}
           </tbody>
         </Table>
+        <Typography color="danger">
+          {errors.repaymentInfo &&
+            errors.repaymentInfo?.map((repayment) => repayment?.principalRepayment?.message)}
+        </Typography>
       </Sheet>
       <Box marginTop={2} display="flex" justifyContent="flex-end" columnGap={2}>
         <Button onClick={handleSubmit(onSubmit)} color="neutral">
