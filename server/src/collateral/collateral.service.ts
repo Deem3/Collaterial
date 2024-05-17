@@ -155,4 +155,22 @@ export class CollateralService {
         ownerId: collateral.ownerId.toString(),
       }));
   }
+  async updateCollateralImage(payload: { id: number; images: string[] }) {
+    const collateral = await this.prisma.collateral.findUnique({
+      where: {
+        id: payload.id,
+      },
+    });
+    if (!collateral) {
+      throw new NotFoundException('Collateral not found');
+    }
+    await this.prisma.collateral.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        images: payload.images,
+      },
+    });
+  }
 }

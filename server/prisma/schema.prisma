@@ -86,6 +86,7 @@ model Collateral {
   dateOfAssessment DateTime
   description      String
   additionalFields Json?
+  images           String[]
   sales            Sales[]
   lendId           Int?
   lend             Lend?        @relation(fields: [lendId], references: [accountNumber], onDelete: Cascade)

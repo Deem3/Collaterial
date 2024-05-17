@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/joy';
 import { FunctionComponent } from 'react';
+import CollateralImage from './CollateralImage';
 import CollateralRegistrationFrom from './CollateralRegistrationFrom';
 import { EditSalesType, EditType } from './helper';
 import ReleaseCollateralForm from './ReleaseCollateralForm';
@@ -48,6 +49,7 @@ const CollateralModal: FunctionComponent<CollateralModalProps> = ({
           <Tabs defaultValue={0}>
             <TabList disableUnderline className="border-y-[1px] border-[#505156]">
               <Tab disableIndicator>Үндсэн</Tab>
+              <Tab disableIndicator>Зураг</Tab>
               <Tab disableIndicator disabled={!edit}>
                 Чөлөөлөх
               </Tab>
@@ -58,8 +60,11 @@ const CollateralModal: FunctionComponent<CollateralModalProps> = ({
             <TabPanel value={0} className="px-[3%]">
               <CollateralRegistrationFrom close={close} id={id} edit={edit} resetEdit={resetEdit} />
             </TabPanel>
+            <TabPanel value={1} className="px-[3%]">
+              {edit && <CollateralImage id={edit.id} imageUrls={edit.images} />}
+            </TabPanel>
             {edit && (
-              <TabPanel value={1} className="px-[3%]">
+              <TabPanel value={2} className="px-[3%]">
                 <ReleaseCollateralForm
                   close={close}
                   edit={{ collateralId: edit.id, description: edit.description, state: edit.state }}
@@ -68,7 +73,7 @@ const CollateralModal: FunctionComponent<CollateralModalProps> = ({
               </TabPanel>
             )}
             {edit && (
-              <TabPanel value={2} className="px-[3%]">
+              <TabPanel value={3} className="px-[3%]">
                 <SoldCollateralForm
                   edit={{ ...editSales, description: edit.description }}
                   resetEdit={resetEdit}

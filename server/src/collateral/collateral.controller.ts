@@ -80,4 +80,10 @@ export class CollateralController {
   async deleteCollateral(@Query('id') id: number) {
     return this.collateralService.deleteCollateral(id);
   }
+  @Roles(ROLE.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Put('/image')
+  async updateCollateralImage(@Body() payload: { id: number; images: string[] }) {
+    return this.collateralService.updateCollateralImage(payload);
+  }
 }

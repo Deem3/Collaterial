@@ -25,6 +25,7 @@ export type EditType = {
   marketValue: number;
   dateOfAssessment: Date;
   description: string;
+  images: string[];
   additionalFields: {
     [key: string]: string[] | number[];
   };
